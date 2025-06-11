@@ -21,6 +21,8 @@ Thumbs.db
 
 .idea/caches/
 .idea/workspace.xml
+.idea/*
+.idea/caches/deviceStreaming.xml
 
 *.lock
 *.bin

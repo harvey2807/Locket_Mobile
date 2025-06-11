@@ -1,9 +1,9 @@
 package vn.edu.hcumuaf.locket.service;
 
 import com.google.firebase.database.*;
-import com.google.firebase.internal.NonNull;
 import vn.edu.hcumuaf.locket.model.entity.Message;
 import org.springframework.stereotype.Service;
+import org.springframework.lang.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
