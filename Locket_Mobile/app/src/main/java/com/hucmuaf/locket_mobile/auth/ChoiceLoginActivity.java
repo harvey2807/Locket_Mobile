@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.hucmuaf.locket_mobile.R;
 
 public class ChoiceLoginActivity extends AppCompatActivity {
-    private Button btnsignin;
+    private Button btnsignin, btnsignup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +22,15 @@ public class ChoiceLoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent in = new Intent(ChoiceLoginActivity.this, LoginActivity.class);
+                startActivity(in);
+            }
+        });
+
+        btnsignup = findViewById(R.id.signup);
+        btnsignup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent in = new Intent(ChoiceLoginActivity.this, SignupActivity.class);
                 startActivity(in);
             }
         });

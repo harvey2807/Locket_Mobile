@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center_horizontal"
-    android:padding="24dp"
     android:background="@drawable/gradient_background">
 
     <FrameLayout
@@ -27,7 +26,7 @@
             android:layout_marginBottom="-10dp"
             android:gravity="center"
             android:text="Modis"
-            android:textColor="#2E099E"
+            android:textColor="@color/pallet5"
             android:textSize="50sp"
             android:textStyle="bold" />
 
@@ -62,9 +61,9 @@
         android:id="@+id/signin"
         android:layout_width="wrap_content"
         android:layout_height="60dp"
-        android:textSize="20sp"
+        android:layout_marginHorizontal="32dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginHorizontal="32dp"
-        android:text="Đăng nhập" />
+        android:text="Đăng nhập"
+        android:textSize="20sp" />
 </LinearLayout>

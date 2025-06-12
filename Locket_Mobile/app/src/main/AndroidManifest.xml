@@ -32,10 +32,20 @@
             </intent-filter>
         </activity>
         <activity android:name=".auth.ChoiceLoginActivity" />
-        <activity android:name=".auth.LoginActivity" />
-        <activity android:name=".TakeActivity" />
+        <activity android:name=".auth.SignupActivity"
+            android:windowSoftInputMode="adjustResize|stateVisible"/>
+        <activity android:name=".auth.ForgotPassActivity"
+            android:windowSoftInputMode="adjustResize|stateVisible"/>
+        <activity android:name=".auth.LoginActivity"
+            android:windowSoftInputMode="adjustResize|stateVisible"/>
+            <!--adjustResize: giúp layout điều chỉnh để không che bàn phím.
+                stateVisible: bàn phím sẽ hiển thị nếu có EditText được focus.-->
+
+        <activity android:name=".model.TakeActivity" />
         <activity android:name=".ReactActivity" />
         <activity android:name=".AllImageActivity" />
+        <activity android:name=".auth.InfoActivity" />
         <activity android:name=".ShowImageActivity"/>
+
     </application>
 </manifest>

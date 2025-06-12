@@ -6,27 +6,24 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
-import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseUser;
 import com.hucmuaf.locket_mobile.R;
-import com.hucmuaf.locket_mobile.TakeActivity;
-import com.google.android.gms.tasks.OnCompleteListener;
+import com.hucmuaf.locket_mobile.model.TakeActivity;
+import com.hucmuaf.locket_mobile.service.FirebaseService;
+
 
 public class LoginActivity extends AppCompatActivity {
-    private TextInputEditText edemail, edpassword;
-    private Button btnLogin;
-    private TextView txtSignup,txtForgerPass;
+
+    private TextInputEditText edEmail, edPassword;
     private FirebaseAuth mAuth;
 
     @Override
@@ -34,72 +31,71 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        edemail = findViewById(R.id.edemailLg);
-        edpassword = findViewById(R.id.edpasswordLg);
-        btnLogin = findViewById(R.id.btnLogin);
-        txtSignup = findViewById(R.id.txtSignup);
-        txtForgerPass = findViewById(R.id.txtForgerPass);
-        mAuth = FirebaseAuth.getInstance();
+        edEmail = findViewById(R.id.edemailLg);
+        edPassword = findViewById(R.id.edpasswordLg);
+        Button btnLogin = findViewById(R.id.btnLogin);
+        TextView txtSignup = findViewById(R.id.txtSignup);
+        TextView txtForgotPass = findViewById(R.id.txtForgotPass);
+        ImageView imgBack = findViewById(R.id.arrowBack);
 
+        mAuth = FirebaseService.getInstance().getAuth();
+
+        // Nhận dữ liệu đăng nhập từ intent nếu có
         Intent intent = getIntent();
-        if (intent!=null) {
-            Bundle ex = intent.getExtras();
-            if (ex!=null){
-                edemail.setText(ex.getString("email"));
-                edpassword.setText(ex.getString("password"));
-            }}
+        if (intent != null && intent.getExtras() != null) {
+            Bundle extras = intent.getExtras();
+            edEmail.setText(extras.getString("email", ""));
+            edPassword.setText(extras.getString("password", ""));
+        }
 
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String email = edemail.getText().toString();
-                String password = edpassword.getText().toString();
-                if (email.isEmpty()||password.isEmpty()){
-                    Toast.makeText(LoginActivity.this, "Không được bỏ trống!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (!isValidEmail(email)) {
-                    Toast.makeText(LoginActivity.this, "Địa chỉ email không hợp lệ!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                mAuth.signInWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    Log.d(TAG, "signInWithEmail:success");
-                                    FirebaseUser user = mAuth.getCurrentUser();
-                                    Toast.makeText(LoginActivity.this, "Đăng Nhập Thành công", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(LoginActivity.this, TakeActivity.class);
-                                    startActivity(intent);
+        btnLogin.setOnClickListener(view -> attemptLogin());
 
-                                } else {
-                                    Log.w(TAG, "signInWithEmail:failure", task.getException());
-                                    Toast.makeText(LoginActivity.this, "Sai Tài Khoản" + email+ "Hoặc Mật khẩu!" + password,
-                                            Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-            }
-        });
+        imgBack.setOnClickListener(view ->
+                startActivity(new Intent(LoginActivity.this, ChoiceLoginActivity.class))
+        );
 
-//        txtSignup.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent in = new Intent(LoginActivity.this, SignupActivity.class);
-//                startActivity(in);
-//            }
-//        });
+        txtSignup.setOnClickListener(view ->
+                startActivity(new Intent(LoginActivity.this, SignupActivity.class))
+        );
 
-        txtForgerPass.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent in = new Intent(LoginActivity.this, ForgotPassActivity.class);
-                startActivity(in);
-            }
-        });
+        txtForgotPass.setOnClickListener(view ->
+                startActivity(new Intent(LoginActivity.this, ForgotPassActivity.class))
+        );
     }
-    private boolean isValidEmail(String email) {
-        return Patterns.EMAIL_ADDRESS.matcher(email).matches();
+
+    private void attemptLogin() {
+        String email = edEmail.getText().toString().trim();
+        String password = edPassword.getText().toString().trim();
+
+        if (email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Không được bỏ trống!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(this, "Địa chỉ email không hợp lệ!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "signInWithEmail:success");
+                        Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                        String userId = firebaseUser != null ? firebaseUser.getUid() : null;
+                        if (userId == null) {
+                            Toast.makeText(this, "Không thể lấy UID người dùng.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        Intent intent = new Intent(LoginActivity.this, TakeActivity.class);
+                        intent.putExtra("userId", userId);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Log.w(TAG, "signInWithEmail:failure", task.getException());
+                        Toast.makeText(this, "Sai tài khoản hoặc mật khẩu!", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }

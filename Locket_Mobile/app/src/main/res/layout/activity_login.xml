@@ -14,10 +14,11 @@
         android:layout_marginBottom="-10dp">
 
         <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:id="@+id/arrowBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="40dp"
             android:layout_marginStart="15dp"
             android:scaleType="fitEnd"
             android:rotation="180"
@@ -28,6 +29,7 @@
             android:layout_height="400dp"
             android:layout_gravity="center_horizontal"
             android:src="@drawable/logo_trongsuot" />
+
     </FrameLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -35,8 +37,7 @@
         android:layout_height="60dp"
         android:layout_margin="20dp"
         android:hint="Email"
-        android:gravity="center"
-        >
+        android:gravity="center">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edemailLg"
@@ -44,8 +45,11 @@
             android:layout_height="match_parent"
             android:background="@drawable/custtomedit"
             android:paddingLeft="10dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             />
     </com.google.android.material.textfield.TextInputLayout>
+
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
@@ -59,20 +63,24 @@
             android:layout_height="match_parent"
             android:background="@drawable/custtomedit"
             android:paddingLeft="10dp"
+            android:focusable="true"
+            android:inputType="textPassword"
+            android:focusableInTouchMode="true"
             />
     </com.google.android.material.textfield.TextInputLayout>
+
     <TextView
-        android:id="@+id/txtForgerPass"
-        android:layout_width="match_parent"
+        android:id="@+id/txtForgotPass"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#4E4E4E"
         android:text="Forget Password"
+        android:textColor="#4E4E4E"
+        android:textStyle="italic"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        android:paddingHorizontal="20dp"
-        android:gravity="end"
-        android:textStyle="italic"
-        />
+        android:layout_marginEnd="30dp"
+        android:layout_gravity="end" />
+
 
     <Button
         android:id="@+id/btnLogin"
