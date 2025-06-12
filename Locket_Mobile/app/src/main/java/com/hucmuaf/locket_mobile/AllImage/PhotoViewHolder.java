@@ -1,4 +1,4 @@
-package com.hucmuaf.locket_mobile.AllImage;
+package com.hucmuaf.locket_mobile.allImage;
 
 import android.view.View;
 import android.widget.ImageView;

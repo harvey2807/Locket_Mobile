@@ -1,4 +1,4 @@
-package com.hucmuaf.locket_mobile.ModelDB;
+package com.hucmuaf.locket_mobile.modeldb;
 
 public class User {
     private String userId;

@@ -1,4 +1,4 @@
-package com.hucmuaf.locket_mobile.Firebase;
+package com.hucmuaf.locket_mobile.firebase;
 
 import androidx.annotation.NonNull;
 
@@ -7,7 +7,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.hucmuaf.locket_mobile.ModelDB.Image;
+import com.hucmuaf.locket_mobile.modeldb.Image;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,6 +17,7 @@ import java.util.Set;
 public class ImageResponsitory {
     private DatabaseReference imagesRef = FirebaseDatabase.getInstance().getReference("images");
 
+    private ValueEventListener currentListener;
     public interface onImageLoaded{
         void onSuccess(List<Image> images);
         void onFailure (Exception e);
@@ -24,7 +25,11 @@ public class ImageResponsitory {
 
     //lấy toàn bộ ảnh của user và ảnh từ bạn bè gửi tới user
     public void getAllImagesByUserId(String userId, Set<String> friendIds, onImageLoaded callback){
-        imagesRef.addValueEventListener(new ValueEventListener() {
+        if (currentListener != null) {
+            imagesRef.removeEventListener(currentListener);
+        }
+
+        currentListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<Image> result = new ArrayList<>();
@@ -49,6 +54,16 @@ public class ImageResponsitory {
             public void onCancelled(@NonNull DatabaseError error) {
                 callback.onFailure(new Exception(error.getMessage()));
             }
-        });
+        };
+        imagesRef.addValueEventListener(currentListener);
     }
+
+    //Gỡ listener khi không cần nữa
+    public void removeListener() {
+        if (currentListener != null) {
+            imagesRef.removeEventListener(currentListener);
+            currentListener = null;
+        }
+    }
+
 }

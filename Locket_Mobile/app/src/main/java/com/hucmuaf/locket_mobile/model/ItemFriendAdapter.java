@@ -13,16 +13,29 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hucmuaf.locket_mobile.R;
+import com.hucmuaf.locket_mobile.modeldb.User;
 
 import java.util.List;
 
 public class ItemFriendAdapter extends RecyclerView.Adapter<ItemFriendAdapter.ItemFriendViewHolder> {
     private Context context;
-    private List<ItemFriend> itemList;
+    private List<User> itemList;
+    private OnFriendClickListener listener;
 
-    public ItemFriendAdapter(Context context, List<ItemFriend> itemList) {
+    public interface OnFriendClickListener{
+        void onFriendClick(User user);
+    }
+
+    public ItemFriendAdapter(Context context, List<User> itemList
+            , OnFriendClickListener listener) {
         this.context = context;
         this.itemList = itemList;
+        this.listener = listener;
+    }
+
+    public void updateList(List<User> newList){
+        itemList = newList;
+        notifyDataSetChanged();
     }
 
     // ViewHolder class
@@ -36,6 +49,7 @@ public class ItemFriendAdapter extends RecyclerView.Adapter<ItemFriendAdapter.It
             tvName = itemView.findViewById(R.id.tvName);
         }
     }
+
     @NonNull
     @Override
     public ItemFriendViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -46,8 +60,8 @@ public class ItemFriendAdapter extends RecyclerView.Adapter<ItemFriendAdapter.It
 
     @Override
     public void onBindViewHolder(@NonNull ItemFriendViewHolder holder, int position) {
-        ItemFriend item = itemList.get(position);
-        String imageName = item.getIcon();
+        User item = itemList.get(position);
+        String imageName = item.getUrlAvatar();
         @SuppressLint("DiscouragedApi")
         int resId = context.getResources().getIdentifier(imageName, "mipmap", context.getPackageName());
         if (resId != 0) {
@@ -56,8 +70,8 @@ public class ItemFriendAdapter extends RecyclerView.Adapter<ItemFriendAdapter.It
             // Xử lý khi không tìm thấy resource
             Log.e("ImageError", "Không tìm thấy hình " + imageName);
         }
-        holder.tvName.setText(item.getName());
-        Log.e("ImageError", item.getName());
+        holder.tvName.setText(item.getFullName());
+        Log.e("ImageError", item.getFullName());
     }
 
     @Override

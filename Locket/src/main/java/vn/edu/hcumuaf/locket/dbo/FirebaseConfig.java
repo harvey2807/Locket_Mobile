@@ -8,9 +8,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
-import javax.annotation.PostConstruct;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.Executor;
@@ -21,7 +18,7 @@ public class FirebaseConfig {
     @Bean
     public FirebaseDatabase firebaseDatabase() throws IOException {
         System.out.println("Firebase database intializing");
-        InputStream serviceAccount = new ClassPathResource("Firebase/modis-admin-keys.json").getInputStream();
+        InputStream serviceAccount = new ClassPathResource("firebase/modis-admin-keys.json").getInputStream();
         FirebaseOptions options = new FirebaseOptions.Builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                 .setDatabaseUrl("https://modis-8f5f6-default-rtdb.firebaseio.com")

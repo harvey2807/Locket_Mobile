@@ -1,6 +1,6 @@
-package com.hucmuaf.locket_mobile.Service;
+package com.hucmuaf.locket_mobile.service;
 
-import com.hucmuaf.locket_mobile.ModelDB.Image;
+import com.hucmuaf.locket_mobile.modeldb.Image;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
