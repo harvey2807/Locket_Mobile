@@ -43,6 +43,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.impl.utils.CompareSizesByArea;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -123,9 +124,12 @@ public class TakeActivity extends AppCompatActivity {
             Log.e(TAG, "Could not find LinearLayout with id 'friends'");
         }
 
-        View main = findViewById(R.id.main_layout);
+        ConstraintLayout main = findViewById(R.id.main_layout);
         gestureDetector = new GestureDetector(this, new SwipeGestureListenerUp(this));
-        main.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
+        main.setOnTouchListener((v, event) -> {
+            gestureDetector.onTouchEvent(event);
+            return true;
+        });
 
         startBackgroundThread();
 

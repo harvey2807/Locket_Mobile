@@ -1,5 +1,7 @@
 package com.hucmuaf.locket_mobile.ModelDB;
 
+import androidx.annotation.NonNull;
+
 import java.util.List;
 
 public class Image {
@@ -68,5 +70,11 @@ public class Image {
 
     public void setReceiverIds(List<String> receiverIds) {
         this.receiverIds = receiverIds;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "[" +imageId + ":" +urlImage + ":"+caption +":"+timestamp +":"+senderId +":"+receiverIds+"]";
     }
 }

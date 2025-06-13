@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -14,7 +15,8 @@
         android:background="@color/black"
         android:clickable="true"
         android:focusable="true"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:elevation="0dp">
 
         <LinearLayout
             android:layout_width="250dp"
@@ -275,7 +277,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#80000000"
-        android:visibility="gone" /> <!-- màu đen với độ mờ 50% -->
+        android:visibility="gone"
+        android:elevation="1dp"/> <!-- màu đen với độ mờ 50% -->
 
     <LinearLayout
         android:id="@+id/decor_caption"
@@ -283,7 +286,10 @@
         android:gravity="bottom|center"
         android:layout_height="wrap_content"
         android:layout_marginTop="565dp"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:elevation="1dp"
+        app:layout_constraintTop_toTopOf="@+id/main_layout"
+        app:layout_constraintStart_toStartOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -442,4 +448,4 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

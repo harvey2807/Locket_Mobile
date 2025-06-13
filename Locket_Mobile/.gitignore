@@ -1,9 +1,9 @@
 .gradle/
-build/
+/build/
+build/reports/
 app/build/
 */build/
 /.idea/
-
 .idea/
 
 *.iml

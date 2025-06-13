@@ -1,5 +1,6 @@
-package com.hucmuaf.locket_mobile;
+package com.hucmuaf.locket_mobile.model;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +11,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.hucmuaf.locket_mobile.model.Image;
+import com.bumptech.glide.Glide;
+import com.hucmuaf.locket_mobile.ModelDB.Image;
+import com.hucmuaf.locket_mobile.R;
 
 import java.util.List;
 
@@ -30,20 +33,26 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         return new PhotoViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull PhotoViewHolder holder, int position) {
         Image item = listImage.get(position);
-//        String url = item.getUrlImage();
-        String caption = "item.getCaption()";
+        String url = item.getUrlImage();
+        String caption = item.getCaption();
         String avatar = "";
-        String accName = "duize";
+        String accName = item.getSenderId();
         long timestamp = item.getTimestamp();
-        int resId = context.getResources().getIdentifier("trathanhtuyen.png", "mipmap", context.getPackageName());
-        holder.imageView.setImageResource(resId);
+        // Load ảnh từ URL bằng Glide
+        Glide.with(context)
+                .load(url)
+                .placeholder(R.drawable.default_img) // ảnh tạm khi đang load
+                .error(R.drawable.default_img) // ảnh khi load lỗi
+                .into(holder.imageView);
         holder.captionText.setText(caption);
-        holder.avatarImage.setImageResource(resId);
+        holder.avatarImage.setImageResource(R.drawable.default_img);
         holder.accNameText.setText(accName);
-        holder.timestampText.setText(timestamp+ "h");
+        String hour = timestamp + "h";
+        holder.timestampText.setText(hour);
     }
 
     @Override
@@ -60,7 +69,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
         public PhotoViewHolder(View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.imageView);
+            imageView = itemView.findViewById(R.id.image);
             captionText = itemView.findViewById(R.id.caption);
             avatarImage = itemView.findViewById(R.id.avatar);
             accNameText = itemView.findViewById(R.id.accName);

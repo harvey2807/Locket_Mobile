@@ -55,7 +55,7 @@ public class ShowImageActivity extends AppCompatActivity {
         ImageView imageView = findViewById(R.id.camera_preview);
         String imagePath = getIntent().getStringExtra("imagePath");
         Bitmap rotatedBitmap;
-        
+
         if (imagePath != null) {
             Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
             rotatedBitmap = rotateImageIfRequired(bitmap, imagePath);
@@ -94,10 +94,13 @@ public class ShowImageActivity extends AppCompatActivity {
         setText();
 
         ImageView download = findViewById(R.id.download);
-        download.setOnClickListener(v ->{
+        download.setOnClickListener(v -> {
             saveBitmapToGallery(this, rotatedBitmap, "captured_" + System.currentTimeMillis() + ".jpg");
         });
 
+        // Lưu thời gian hiện tại
+//        Map<String, Object> data = new HashMap<>();
+//        data.put("createdAt", FieldValue.serverTimestamp());
 
 
     }

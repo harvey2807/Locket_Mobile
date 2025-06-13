@@ -9,7 +9,7 @@ public class APIClient {
     //Kết nối Android với API RESTful
     private static Retrofit retrofit;
 
-    public static Retrofit getClient(){
+    public static Retrofit getClient() {
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
