@@ -7,7 +7,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.hucmuaf.locket_mobile.modeldb.Image;
+import com.hucmuaf.locket_mobile.ModelDB.Image;
 
 import java.util.ArrayList;
 import java.util.Collections;

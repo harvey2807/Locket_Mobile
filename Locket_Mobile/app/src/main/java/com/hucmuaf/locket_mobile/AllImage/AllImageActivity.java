@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 import com.hucmuaf.locket_mobile.Firebase.ImageResponsitory;
-import com.hucmuaf.locket_mobile.modeldb.Image;
+import com.hucmuaf.locket_mobile.ModelDB.Image;
 import com.hucmuaf.locket_mobile.R;
 import com.hucmuaf.locket_mobile.ReactActivity;
 import com.hucmuaf.locket_mobile.service.APIClient;
