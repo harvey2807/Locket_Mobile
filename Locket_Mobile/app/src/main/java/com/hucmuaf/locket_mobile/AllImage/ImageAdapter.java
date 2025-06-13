@@ -4,9 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
-import com.hucmuaf.locket_mobile.ModelDB.Image;
+import com.hucmuaf.locket_mobile.modeldb.Image;
 import com.hucmuaf.locket_mobile.R;
 import com.bumptech.glide.Glide;
 

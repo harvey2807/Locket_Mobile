@@ -1,4 +1,4 @@
-package com.hucmuaf.locket_mobile.ModelDB;
+package com.hucmuaf.locket_mobile.modeldb;
 
 import java.util.List;
 

@@ -10,7 +10,7 @@
 
 src/main/resources/modis-admin-keys.json
 
-src/main/resources/firebase/modis-admin-keys.json
+src/main/resources/modis-admin-keys.json
 src/main/resources/application.properties
 src/main/resources/application.yml
 

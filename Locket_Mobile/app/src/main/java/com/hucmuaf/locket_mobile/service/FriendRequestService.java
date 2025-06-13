@@ -1,6 +1,6 @@
 package com.hucmuaf.locket_mobile.service;
 
-import com.hucmuaf.locket_mobile.ModelDB.User;
+import com.hucmuaf.locket_mobile.modeldb.User;
 
 import java.util.List;
 import java.util.Set;
