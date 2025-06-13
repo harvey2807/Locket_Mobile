@@ -8,6 +8,8 @@
 /dataSources.local.xml
 
 src/main/resources/modis-admin-keys.json
+src/main/resources/application.properties
+src/main/resources/application.yml
 
 *.iml
 .idea/
