@@ -24,6 +24,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.hucmuaf.locket_mobile.ShareDialogFragment;
 import com.hucmuaf.locket_mobile.api.ApiClient;
 import com.hucmuaf.locket_mobile.api.FriendListApiService;
+import com.hucmuaf.locket_mobile.auth.LoginActivity;
 import com.hucmuaf.locket_mobile.model.FriendListResponse;
 import com.hucmuaf.locket_mobile.model.User;
 import com.hucmuaf.locket_mobile.model.FriendRequest;
@@ -51,19 +52,19 @@ import retrofit2.Response;
  */
 public class ListFriendActivity extends AppCompatActivity {
 
-    // ===== API SERVICE =====
+    //  API SERVICE 
     // Service để gọi các API backend (lấy danh sách bạn bè, lời mời kết bạn, v.v.)
     private FriendListApiService apiService;
 
-    // ===== USER ID HIỆN TẠI =====
-    // ID của user đang đăng nhập - lấy động từ Firebase Auth thay vì hardcode
+    //  USER ID HIỆN TẠI 
+    // ID của user đang đăng nhập - lấy động từ Firebase Auth 
     private String currentUserId;
 
-    // ===== FIREBASE AUTH =====
+    //  FIREBASE AUTH 
     // Firebase Auth để lấy thông tin user đang đăng nhập
     private FirebaseAuth mAuth;
 
-    // ===== UI COMPONENTS =====
+    //  UI COMPONENTS 
     private TextView friendCount;                    // Hiển thị số lượng bạn bè (ví dụ: "5 / 20 người bạn")
     private EditText searchFriend;                  // Ô tìm kiếm bạn bè
     private RecyclerView friendsRecyclerView;       // Danh sách bạn bè hiện có
@@ -71,7 +72,7 @@ public class ListFriendActivity extends AppCompatActivity {
     private FriendAdapter friendAdapter;            // Adapter cho danh sách bạn bè
     private PendingRequestAdapter pendingRequestAdapter; // Adapter cho danh sách lời mời đang chờ
 
-    // ===== DATA LISTS =====
+    //  DATA LISTS 
     private List<User> friendsList = new ArrayList<>();           // Danh sách bạn bè từ Firebase
     private List<FriendRequest> pendingRequestsList = new ArrayList<>(); // Danh sách lời mời đang chờ
 
@@ -80,26 +81,24 @@ public class ListFriendActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listfriend);
 
-        // ===== KHỞI TẠO FIREBASE AUTH =====
-        // Lấy instance Firebase Auth để truy cập thông tin user đang đăng nhập
+        //  KHỞI TẠO FIREBASE AUTH 
         mAuth = FirebaseAuth.getInstance();
 
-        // ===== KHỞI TẠO API SERVICE =====
-        // Service để gọi các API backend (Retrofit)
+        //  KHỞI TẠO API SERVICE 
         apiService = ApiClient.getFriendListApiService();
 
-        // ===== LẤY USER ID TỪ EMAIL ĐĂNG NHẬP =====
-        // Thay vì dùng Firebase Auth UID, lấy user ID từ email để đảm bảo đúng với database
+        //  LẤY USER ID TỪ EMAIL ĐĂNG NHẬP 
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null && currentUser.getEmail() != null) {
             // Lấy user ID từ email đăng nhập
             loadUserIdFromEmail(currentUser.getEmail());
         } else {
-            // Fallback nếu user chưa đăng nhập (trường hợp test)
-            currentUserId = "camt91990"; // User ID đã thêm vào Firebase
-            // Tắt Toast thông báo fallback
-            // Toast.makeText(this, "Using fallback User ID: " + currentUserId, Toast.LENGTH_SHORT).show();
-            initializeAfterUserId();
+            Log.e("ListFriendActivity", "No user logged in");
+            Toast.makeText(this, "Vui lòng đăng nhập lại", Toast.LENGTH_SHORT).show();
+            // Chuyển về màn hình đăng nhập
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
         }
     }
 
@@ -108,10 +107,8 @@ public class ListFriendActivity extends AppCompatActivity {
      * Gọi API để lấy user ID tương ứng với email từ database
      */
     private void loadUserIdFromEmail(String email) {
-        // Debug log để theo dõi quá trình
         Log.d("ListFriendActivity", "Loading user ID for email: " + email);
 
-        // Gọi API để lấy user ID từ email
         Call<String> call = apiService.getUserIdByEmail(email);
         call.enqueue(new Callback<String>() {
             @Override
@@ -120,24 +117,28 @@ public class ListFriendActivity extends AppCompatActivity {
                 Log.d("ListFriendActivity", "API Response Body: " + response.body());
 
                 if (response.isSuccessful() && response.body() != null) {
-                    // Lấy user ID thành công
                     currentUserId = response.body();
                     Log.d("ListFriendActivity", "Successfully got User ID: " + currentUserId);
+                    // Chỉ khởi tạo UI và gọi API sau khi có user ID
                     initializeAfterUserId();
                 } else {
-                    // Fallback nếu không tìm thấy user
-                    currentUserId = "camt91990";
-                    Log.w("ListFriendActivity", "User not found, using fallback: " + currentUserId);
-                    initializeAfterUserId();
+                    Log.e("ListFriendActivity", "Failed to get user ID");
+                    Toast.makeText(ListFriendActivity.this, "Không thể lấy thông tin người dùng", Toast.LENGTH_SHORT).show();
+                    // Chuyển về màn hình đăng nhập
+                    Intent intent = new Intent(ListFriendActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                    finish();
                 }
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 Log.e("ListFriendActivity", "API call failed: " + t.getMessage());
-                // Fallback nếu lỗi network
-                currentUserId = "camt91990";
-                initializeAfterUserId();
+                Toast.makeText(ListFriendActivity.this, "Lỗi kết nối, vui lòng thử lại", Toast.LENGTH_SHORT).show();
+                // Chuyển về màn hình đăng nhập
+                Intent intent = new Intent(ListFriendActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
     }
@@ -147,11 +148,16 @@ public class ListFriendActivity extends AppCompatActivity {
      * Đây là bước quan trọng để setup toàn bộ màn hình
      */
     private void initializeAfterUserId() {
-        // ===== TEST KẾT NỐI API TRƯỚC =====
-        // Kiểm tra backend có hoạt động không
+        if (currentUserId == null || currentUserId.isEmpty()) {
+            Log.e("ListFriendActivity", "User ID is null or empty");
+            Toast.makeText(this, "Lỗi: Không có thông tin người dùng", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        //  TEST KẾT NỐI API TRƯỚC 
         testApiConnection();
 
-        // ===== KHỞI TẠO UI VÀ LOAD DỮ LIỆU =====
+        //  KHỞI TẠO UI VÀ LOAD DỮ LIỆU 
         initializeViews();        // Khởi tạo các view và setup search
         setupRecyclerViews();     // Setup RecyclerView cho danh sách bạn bè và lời mời
         setupClickListeners();    // Setup click listeners cho các mũi tên share
@@ -173,23 +179,20 @@ public class ListFriendActivity extends AppCompatActivity {
                 Log.d("ListFriendActivity", "API Test Response Code: " + response.code());
                 Log.d("ListFriendActivity", "API Test Response Body: " + response.body());
                 
-                // Xử lý lỗi JSON parsing
                 if (response.code() == 204) {
                     Log.d("ListFriendActivity", "API Test successful - No Content");
                 } else if (response.isSuccessful()) {
                     Log.d("ListFriendActivity", "API Test successful");
                 } else {
                     Log.e("ListFriendActivity", "API Test failed with code: " + response.code());
+                    Toast.makeText(ListFriendActivity.this, "Kết nối thất bại, vui lòng thử lại!", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 Log.e("ListFriendActivity", "API Test Failed: " + t.getMessage());
-                // Chỉ hiển thị Toast khi lỗi nghiêm trọng
-                if (t.getMessage() != null && !t.getMessage().contains("JSON document was not fully consumed")) {
-                    Toast.makeText(ListFriendActivity.this, "Kết nối thất bại, vui lòng thử lại!", Toast.LENGTH_SHORT).show();
-                }
+                Toast.makeText(ListFriendActivity.this, "Kết nối thất bại, vui lòng thử lại!", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -199,13 +202,13 @@ public class ListFriendActivity extends AppCompatActivity {
      * Ánh xạ các view từ layout và setup các listener
      */
     private void initializeViews() {
-        // ===== ÁNH XẠ CÁC VIEW TỪ LAYOUT =====
+        //  ÁNH XẠ CÁC VIEW TỪ LAYOUT 
         friendCount = findViewById(R.id.friendCount);
         searchFriend = findViewById(R.id.searchFriend);
         friendsRecyclerView = findViewById(R.id.friendsRecyclerView);
         pendingRequestsRecyclerView = findViewById(R.id.pendingRequestsRecyclerView);
 
-        // ===== SETUP TÌM KIẾM REALTIME =====
+        //  SETUP TÌM KIẾM REALTIME 
         // TextWatcher để lắng nghe thay đổi text trong ô search
         // Khi user gõ, sẽ tự động tìm kiếm và cập nhật danh sách
         searchFriend.addTextChangedListener(new TextWatcher() {
@@ -228,7 +231,7 @@ public class ListFriendActivity extends AppCompatActivity {
      * Tạo adapter và setup layout manager cho từng danh sách
      */
     private void setupRecyclerViews() {
-        // ===== SETUP RECYCLERVIEW CHO DANH SÁCH BẠN BÈ =====
+        //  SETUP RECYCLERVIEW CHO DANH SÁCH BẠN BÈ 
         // Adapter cho danh sách bạn bè hiện có, callback removeFriend khi xóa bạn
         friendAdapter = new FriendAdapter(friendsList, new FriendAdapter.OnFriendActionListener() {
             @Override
@@ -239,7 +242,7 @@ public class ListFriendActivity extends AppCompatActivity {
         friendsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         friendsRecyclerView.setAdapter(friendAdapter);
 
-        // ===== SETUP RECYCLERVIEW CHO DANH SÁCH LỜI MỜI ĐANG CHỜ =====
+        //  SETUP RECYCLERVIEW CHO DANH SÁCH LỜI MỜI ĐANG CHỜ 
         // Adapter cho danh sách lời mời kết bạn đang chờ, callback accept/reject khi xử lý lời mời
         pendingRequestAdapter = new PendingRequestAdapter(pendingRequestsList, new PendingRequestAdapter.OnPendingRequestActionListener() {
             @Override
@@ -260,21 +263,21 @@ public class ListFriendActivity extends AppCompatActivity {
 
     /**
      * Setup click listeners cho các mũi tên share
-     * THAY ĐỔI CHÍNH: Share trực tiếp không hiện dialog
+     * Share trực tiếp không hiện dialog
      */
     private void setupClickListeners() {
-        // ===== ÁNH XẠ CÁC MŨI TÊN SHARE =====
+        //  ÁNH XẠ CÁC MŨI TÊN SHARE 
         ImageView facebookChevron = findViewById(R.id.facebook_chevron);
         ImageView messengerChevron = findViewById(R.id.messenger_chevron);
         ImageView instagramChevron = findViewById(R.id.instagram_chevron);
         ImageView shareChevron = findViewById(R.id.share_chevron);
 
-        // ===== TẠO SHARE TEXT VỚI USER ID ĐỘNG =====
+        //  TẠO SHARE TEXT VỚI USER ID ĐỘNG 
         // Dòng chữ share với userId thực của user đang đăng nhập
         String shareText = "Tôi muốn thêm bạn vào Màn hình chính của tôi qua Modis. Chạm vào liên kết để chấp nhận 💛 https://modis.app/invite/" + currentUserId;
 
-        // ===== FACEBOOK SHARE TRỰC TIẾP =====
-        // Khi bấm mũi tên Facebook → Share trực tiếp qua Facebook app
+        //  FACEBOOK SHARE TRỰC TIẾP 
+        // Khi bấm mũi tên Facebook -> Share trực tiếp qua Facebook app
         facebookChevron.setOnClickListener(v -> {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
@@ -287,8 +290,8 @@ public class ListFriendActivity extends AppCompatActivity {
             }
         });
 
-        // ===== MESSENGER SHARE TRỰC TIẾP =====
-        // Khi bấm mũi tên Messenger → Share trực tiếp qua Messenger app
+        //  MESSENGER SHARE TRỰC TIẾP 
+        // Khi bấm mũi tên Messenger -> Share trực tiếp qua Messenger app
         messengerChevron.setOnClickListener(v -> {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
@@ -301,8 +304,8 @@ public class ListFriendActivity extends AppCompatActivity {
             }
         });
 
-        // ===== INSTAGRAM SHARE TRỰC TIẾP =====
-        // Khi bấm mũi tên Instagram → Share trực tiếp qua Instagram app
+        //  INSTAGRAM SHARE TRỰC TIẾP 
+        // Khi bấm mũi tên Instagram -> Share trực tiếp qua Instagram app
         instagramChevron.setOnClickListener(v -> {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
@@ -315,8 +318,8 @@ public class ListFriendActivity extends AppCompatActivity {
             }
         });
 
-        // ===== SHARE CHUNG =====
-        // Khi bấm mũi tên Share → Mở menu share chung của Android
+        //  SHARE CHUNG 
+        // Khi bấm mũi tên Share -> Mở menu share chung của Android
         shareChevron.setOnClickListener(v -> {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
@@ -330,18 +333,18 @@ public class ListFriendActivity extends AppCompatActivity {
      * THÊM MỚI: Các icon này sẽ chuyển hướng giống như các mũi tên share
      */
     private void setupAppIconClickListeners() {
-        // ===== TẠO SHARE TEXT VỚI USER ID ĐỘNG =====
+        //  TẠO SHARE TEXT VỚI USER ID ĐỘNG 
         // Dòng chữ share với userId thực của user đang đăng nhập
         String shareText = "Tôi muốn thêm bạn vào Màn hình chính của tôi qua Modis. Chạm vào liên kết để chấp nhận 💛 https://modis.app/invite/" + currentUserId;
 
-        // ===== ÁNH XẠ CÁC ICON APP =====
+        //  ÁNH XẠ CÁC ICON APP 
         LinearLayout messengerLayout = findViewById(R.id.messenger_layout);
         LinearLayout facebookLayout = findViewById(R.id.facebook_layout);
         LinearLayout instagramLayout = findViewById(R.id.instagram_layout);
         LinearLayout shareLayout = findViewById(R.id.share_layout);
 
-        // ===== MESSENGER ICON CLICK =====
-        // Khi bấm icon Messenger → Share trực tiếp qua Messenger app
+        //  MESSENGER ICON CLICK 
+        // Khi bấm icon Messenger -> Share trực tiếp qua Messenger app
         messengerLayout.setOnClickListener(v -> {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
@@ -354,8 +357,8 @@ public class ListFriendActivity extends AppCompatActivity {
             }
         });
 
-        // ===== FACEBOOK ICON CLICK =====
-        // Khi bấm icon Facebook → Share trực tiếp qua Facebook app
+        //  FACEBOOK ICON CLICK 
+        // Khi bấm icon Facebook -> Share trực tiếp qua Facebook app
         facebookLayout.setOnClickListener(v -> {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
@@ -368,8 +371,8 @@ public class ListFriendActivity extends AppCompatActivity {
             }
         });
 
-        // ===== INSTAGRAM ICON CLICK =====
-        // Khi bấm icon Instagram → Share trực tiếp qua Instagram app
+        //  INSTAGRAM ICON CLICK 
+        // Khi bấm icon Instagram -> Share trực tiếp qua Instagram app
         instagramLayout.setOnClickListener(v -> {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
@@ -382,8 +385,8 @@ public class ListFriendActivity extends AppCompatActivity {
             }
         });
 
-        // ===== SHARE ICON CLICK =====
-        // Khi bấm icon Share → Mở menu share chung của Android
+        //  SHARE ICON CLICK 
+        // Khi bấm icon Share -> Mở menu share chung của Android
         shareLayout.setOnClickListener(v -> {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
@@ -394,7 +397,7 @@ public class ListFriendActivity extends AppCompatActivity {
 
     /**
      * Load danh sách bạn bè từ Firebase
-     * THAY ĐỔI CHÍNH: Số lượng và danh sách bạn bè lấy từ Firebase, không set cứng
+     * Số lượng và danh sách bạn bè lấy từ Firebase, không set cứng
      */
     private void loadFriendList() {
         Log.d("ListFriendActivity", "Loading friend list for user ID: " + currentUserId);
@@ -414,12 +417,11 @@ public class ListFriendActivity extends AppCompatActivity {
                     Log.d("ListFriendActivity", "Max Friends: " + friendListResponse.getMaxFriends());
                     Log.d("ListFriendActivity", "Friends List Size: " + friendListResponse.getFriends().size());
 
-                    // ===== CẬP NHẬT SỐ LƯỢNG BẠN BÈ TỪ FIREBASE =====
-                    // Thay vì set cứng "10 / 20", giờ lấy số lượng thực từ Firebase
+                    //  CẬP NHẬT SỐ LƯỢNG BẠN BÈ TỪ FIREBASE 
                     friendCount.setText(friendListResponse.getTotalFriends() + " / " +
                             friendListResponse.getMaxFriends() + " người bạn đã được bổ sung");
 
-                    // ===== CẬP NHẬT DANH SÁCH BẠN BÈ TỪ FIREBASE =====
+                    //  CẬP NHẬT DANH SÁCH BẠN BÈ TỪ FIREBASE 
                     // Hiển thị đúng danh sách bạn bè hiện có trên Firebase
                     friendsList.clear();
                     friendsList.addAll(friendListResponse.getFriends());
@@ -455,17 +457,17 @@ public class ListFriendActivity extends AppCompatActivity {
 
     /**
      * Tìm kiếm bạn bè realtime
-     * THAY ĐỔI CHÍNH: Khi search trống sẽ load lại danh sách bạn bè ban đầu
+     * Khi search trống sẽ load lại danh sách bạn bè ban đầu
      */
     private void searchUsers(String query) {
         if (query.trim().isEmpty()) {
-            // ===== KHI SEARCH TRỐNG =====
+            //  KHI SEARCH TRỐNG 
             // Load lại danh sách bạn bè ban đầu từ Firebase
             loadFriendList();
             return;
         }
 
-        // ===== TÌM KIẾM REALTIME =====
+        //  TÌM KIẾM REALTIME 
         // Gọi API tìm kiếm user theo query
         SearchUserRequest request = new SearchUserRequest(query, currentUserId);
         Call<List<User>> call = apiService.searchUsers(request);
@@ -554,8 +556,8 @@ public class ListFriendActivity extends AppCompatActivity {
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         dialog.show();
 
-        // ===== CẬP NHẬT TÊN USER ĐỘNG =====
-        // Thay vì hardcode "Đăng Trần", giờ lấy tên thực từ user object
+        //  CẬP NHẬT TÊN USER ĐỘNG 
+        //  "Đăng Trần", giờ lấy tên thực từ user object
         TextView titleText = dialogView.findViewById(R.id.dialogTitle);
         if (titleText != null) {
             String userName = user.getFullName() != null ? user.getFullName() : user.getUserName();
@@ -645,7 +647,7 @@ public class ListFriendActivity extends AppCompatActivity {
                     List<FriendRequest> pendingRequests = response.body();
                     Log.d("ListFriendActivity", "Pending Requests Count: " + pendingRequests.size());
 
-                    // ===== CẬP NHẬT DANH SÁCH LỜI MỜI ĐANG CHỜ =====
+                    //  CẬP NHẬT DANH SÁCH LỜI MỜI ĐANG CHỜ 
                     // Cập nhật UI với danh sách lời mời mới từ backend
                     pendingRequestsList.clear();
                     pendingRequestsList.addAll(pendingRequests);
