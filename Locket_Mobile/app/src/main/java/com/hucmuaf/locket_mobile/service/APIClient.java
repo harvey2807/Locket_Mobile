@@ -1,4 +1,4 @@
-package com.hucmuaf.locket_mobile.Service;
+package com.hucmuaf.locket_mobile.service;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

@@ -2,7 +2,6 @@ package com.hucmuaf.locket_mobile.service;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.ktx.Firebase;
 
 public class FirebaseService {
     // This class can be used to handle Firebase-related operations such as authentication, database access, etc.

@@ -1,5 +1,7 @@
 package com.hucmuaf.locket_mobile;
 
+import static android.content.ContentValues.TAG;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -99,6 +101,27 @@ public class TakeActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        // Tìm LinearLayout với id="friends" và thêm sự kiện onClick
+        LinearLayout friendsLayout = findViewById(R.id.friends);
+        if (friendsLayout != null) {
+            Log.d(TAG, "Found friends layout, setting click listener");
+
+            // Đảm bảo layout có thể click được
+            friendsLayout.setClickable(true);
+            friendsLayout.setFocusable(true);
+
+            friendsLayout.setOnClickListener(v -> {
+                Log.d(TAG, "Friends layout clicked, starting ListFriendActivity");
+                try {
+                    Intent intent = new Intent(TakeActivity.this, ListFriendActivity.class);
+                    startActivity(intent);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error starting ListFriendActivity", e);
+                }
+            });
+        } else {
+            Log.e(TAG, "Could not find LinearLayout with id 'friends'");
+        }
 
         View main = findViewById(R.id.main_layout);
         gestureDetector = new GestureDetector(this, new SwipeGestureListenerUp(this));

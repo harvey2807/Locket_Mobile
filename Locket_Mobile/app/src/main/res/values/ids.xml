@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="notification_text" type="id" />
+    <item name="copy_button" type="id" />
+    <item name="share_icon" type="id" />
+    <item name="facebook_icon" type="id" />
+</resources>

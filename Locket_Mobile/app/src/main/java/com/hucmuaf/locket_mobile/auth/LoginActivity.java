@@ -1,5 +1,6 @@
 package com.hucmuaf.locket_mobile.auth;
 
+import static android.content.Intent.getIntent;
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
 import android.content.Intent;

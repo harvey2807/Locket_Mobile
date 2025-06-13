@@ -32,8 +32,8 @@ public class ItemFriendAdapter extends RecyclerView.Adapter<ItemFriendAdapter.It
         @SuppressLint("WrongViewCast")
         public ItemFriendViewHolder(@NonNull View itemView) {
             super(itemView);
-            ivIcon = itemView.findViewById(R.id.ivIcon);
-            tvName = itemView.findViewById(R.id.tvName);
+//            ivIcon = itemView.findViewById(R.id.ivIcon);
+//            tvName = itemView.findViewById(R.id.tvName);
         }
     }
     @NonNull

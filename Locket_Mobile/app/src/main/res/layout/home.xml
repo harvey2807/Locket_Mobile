@@ -30,14 +30,18 @@
             android:layout_marginStart="40dp"
             android:layout_marginEnd="40dp"
             android:background="@drawable/circle_border"
-            android:gravity="center">
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
 
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:layout_gravity="center"
                 android:layout_marginStart="10dp"
-                android:src="@mipmap/groups" />
+                android:src="@mipmap/groups"
+                android:clickable="false"
+                android:focusable="false" />
 
             <TextView
                 android:layout_width="100dp"
@@ -46,7 +50,9 @@
                 android:gravity="center"
                 android:text="6 Bạn bè"
                 android:textColor="#ffffff"
-                android:textSize="20dp" />
+                android:textSize="20dp"
+                android:clickable="false"
+                android:focusable="false" />
         </LinearLayout>
 
         <ImageView

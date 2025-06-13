@@ -1,4 +1,4 @@
-package vn.edu.hcmuaf.locket.config;
+package vn.edu.hcumuaf.locket.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
