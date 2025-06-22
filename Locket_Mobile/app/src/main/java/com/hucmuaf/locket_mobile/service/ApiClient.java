@@ -22,7 +22,6 @@ public class ApiClient {
 
     private static FriendListApiService friendListApiService = null;
     private static MessageListAPIService messageListAPIService;
-    private static UploadImageService uploadImageService;
     private static ImageService imageService;
     private static ReactionService reactionService;
     private static UserService userService;
@@ -52,12 +51,7 @@ public class ApiClient {
         }
         return imageService;
     }
-    public static UploadImageService getUploadImageService() {
-        if (uploadImageService == null) {
-            uploadImageService = getClient().create(UploadImageService.class);
-        }
-        return uploadImageService;
-    }
+
     // retrofit với AuthInterceptor để tự động thêm token vào header
     // Retrofit có token – cho các API quan trọng (profile, cập nhật,...)
     public static Retrofit getAuthClient(Context context) {
