@@ -45,11 +45,11 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoViewHolder> {
         mapImageToUser(this.listUsers, this.listImage);
     }
 
-    public void mapImageToUser(List<User> users, List<Image> images){
-        for (int i = 0; i< images.size(); i++){
+    public void mapImageToUser(List<User> users, List<Image> images) {
+        for (int i = 0; i < images.size(); i++) {
             String sendUserID = images.get(i).getSenderId();
-            for(int j =0; j< users.size(); j++){
-                if(sendUserID.equals(users.get(j).getUserId())){
+            for (int j = 0; j < users.size(); j++) {
+                if (sendUserID.equals(users.get(j).getUserId())) {
                     map.put(sendUserID, users.get(j));
                 }
             }
@@ -69,6 +69,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoViewHolder> {
         Log.e("Map", map.toString());
         Image item = listImage.get(position);
         User u = map.get(item.getSenderId());
+        if(u != null) {
         String url = item.getUrlImage();
         String caption = item.getCaption();
         String avatar = u.getUrlAvatar();
@@ -90,7 +91,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoViewHolder> {
         holder.getAvatarImage().setImageResource(R.drawable.default_img);
         holder.getAccNameText().setText(accName);
         holder.getTimestampText().setText(timestamp);
-   }
+        }
+    }
 
     public static String getTimeDifferenceFromNow(long pastTime) {
         // Lấy thời gian hiện tại
@@ -108,9 +110,9 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoViewHolder> {
         // Tính ra giờ và phút
         long hours = diffInMillis / (1000 * 60 * 60);
         long minutes = (diffInMillis / (1000 * 60)) % 60;
-        if(hours == 0) return minutes+"m";
-        else if (hours < 24)return hours +"h";
-        else if(hours/24 < 7)return hours/24 + "d";
+        if (hours == 0) return minutes + "m";
+        else if (hours < 24) return hours + "h";
+        else if (hours / 24 < 7) return hours / 24 + "d";
         else return sdf.format(new Date(pastTime));
 
     }

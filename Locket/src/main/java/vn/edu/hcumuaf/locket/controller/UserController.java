@@ -26,7 +26,7 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Lỗi khi cập nhật: " + e.getMessage());
         }
-    }
+    }   
 
     @GetMapping("/find/{userId}")
     public CompletableFuture<ResponseEntity<User>> findUserById(@PathVariable String userId) {

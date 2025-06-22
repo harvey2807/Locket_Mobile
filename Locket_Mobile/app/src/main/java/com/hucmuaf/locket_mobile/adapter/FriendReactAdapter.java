@@ -1,6 +1,7 @@
 package com.hucmuaf.locket_mobile.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,11 +41,12 @@ public class FriendReactAdapter  extends RecyclerView.Adapter<ItemFriendReactHol
     @Override
     public void onBindViewHolder(@NonNull ItemFriendReactHolder holder, int position) {
         User u = itemList.get(position);
-        String imageName = u.getUrlAvatar();
+        String url = u.getUrlAvatar();
+        Log.e("FriendReactAdapter", u.getFullName());
 
         // Load ảnh từ URL bằng Glide
         Glide.with(context)
-                .load(imageName)
+                .load(url)
                 .placeholder(R.drawable.avt) // ảnh tạm khi đang load
                 .error(R.drawable.avt) // ảnh khi load lỗi
                 .into(holder.getIvAvt());
