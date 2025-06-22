@@ -5,129 +5,102 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black">
-    <!--    android:background="@drawable/send.xml"-->
 
+    <!-- Back Button -->
+    <ImageView
+        android:id="@+id/account13"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:rotationY="-176"
+        android:src="@mipmap/right_arrow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- User Avatar -->
     <ImageView
         android:id="@+id/account6"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
         android:background="@drawable/circle_border"
         android:src="@mipmap/account_icon"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="48dp"
-        tools:layout_editor_absoluteY="16dp" />
+        app:layout_constraintStart_toEndOf="@id/account13"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/account14"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:background="@drawable/circle_border"
-        android:src="@mipmap/account_icon"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="563dp" />
-
-
-    <ImageView
-        android:id="@+id/account12"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:background="@drawable/circle_border"
-        android:src="@mipmap/account_icon"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="780dp" />
-
-    <ImageView
-        android:id="@+id/account15"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="136dp"
-        android:src="@drawable/send"
-        app:layout_constraintTop_toBottomOf="@+id/textView18"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="345dp" />
-
-    <TextView
-        android:id="@+id/textView17"
-        android:layout_width="124dp"
-        android:layout_height="29dp"
-        android:fontFamily="serif-monospace"
-        android:text="Messages"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        tools:fontFamily="casual"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="77dp"
-        tools:layout_editor_absoluteY="572dp" />
-
-    <TextView
-        android:id="@+id/textView18"
-        android:layout_width="154dp"
-        android:layout_height="29dp"
-        android:fontFamily="serif-monospace"
-        android:text="Messages"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        tools:fontFamily="casual"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="258dp"
-        tools:layout_editor_absoluteY="615dp" />
-
-    <TextView
-        android:id="@+id/textView14"
-        android:layout_width="140dp"
-        android:layout_height="24dp"
-        android:text="Today, 6:16 PM"
-        android:textColor="@color/white"
-        android:textSize="18sp"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="135dp"
-        tools:layout_editor_absoluteY="77dp" />
-
-    <ImageView
-        android:id="@+id/account13"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:rotationY="-176"
-        android:src="@mipmap/right_arrow"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="-1dp"
-        tools:layout_editor_absoluteY="16dp" />
-
+    <!-- User Name -->
     <TextView
         android:id="@+id/textView16"
-        android:layout_width="100dp"
-        android:layout_height="24dp"
-        android:text="Em yêu❤️"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="16dp"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:textColor="@color/white"
-        android:textSize="18sp"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="114dp"
-        tools:layout_editor_absoluteY="29dp" />
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/account6"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/account6"
+        app:layout_constraintTop_toTopOf="@id/account6"
+        tools:text="User Name" />
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="430dp"
-        android:layout_gravity="center"
-        android:clipChildren="true"
-        android:clipToPadding="true"
-        app:cardCornerRadius="60dp"
-        app:cardElevation="4dp"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="118dp" />
+    <!-- RecyclerView for Messages -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewMessages"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:clipToPadding="false"
+        android:paddingHorizontal="16dp"
+        app:layout_constraintBottom_toTopOf="@id/inputContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/account6" />
 
-    <EditText
-        android:id="@+id/editTextText"
-        android:layout_width="250dp"
-        android:layout_height="50dp"
-        android:ems="10"
-        android:inputType="text"
-        android:text="Please enter your text"
-        android:textColor="@color/white"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="77dp"
-        tools:layout_editor_absoluteY="780dp" />
+    <!-- Input Container -->
+    <LinearLayout
+        android:id="@+id/inputContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <!-- Message Input -->
+        <EditText
+            android:id="@+id/editTextText"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/rounded_edittext"
+            android:ems="10"
+            android:hint="Please enter your text"
+            android:inputType="text"
+            android:textColor="@color/white"
+            android:textColorHint="#80FFFFFF"
+            android:paddingHorizontal="16dp" />
+
+        <!-- Send Button -->
+        <ImageView
+            android:id="@+id/account15"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/send"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

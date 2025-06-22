@@ -1,12 +1,9 @@
 package com.hucmuaf.locket_mobile.dto;
 
-import com.google.gson.annotations.SerializedName;
 
 public class SearchUserRequest {
-    @SerializedName("query")
     private String query;
     
-    @SerializedName("currentUserId")
     private String currentUserId;
 
     public SearchUserRequest() {}

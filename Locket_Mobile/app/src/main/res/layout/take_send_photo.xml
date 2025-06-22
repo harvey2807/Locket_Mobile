@@ -22,7 +22,8 @@
             android:layout_height="40dp"
             android:layout_marginStart="130dp"
             android:layout_marginTop="30dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            tools:ignore="UseCompoundDrawables">
 
             <TextView
                 android:layout_width="130dp"
@@ -43,6 +44,7 @@
         </LinearLayout>
 
         <FrameLayout
+            android:id="@+id/preview_image_view"
             android:layout_width="match_parent"
             android:layout_height="400dp"
             android:layout_marginTop="30dp">
@@ -63,23 +65,26 @@
                     android:scaleType="centerCrop" />
 
                 <LinearLayout
+                    android:id="@+id/caption_view"
                     android:layout_width="match_parent"
-                    android:layout_height="45dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="340dp"
                     android:gravity="center_horizontal">
 
                     <EditText
                         android:id="@+id/caption"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:background="@drawable/black_border_apha50"
                         android:hint="Thêm một tin nhắn"
+                        android:singleLine="true"
                         android:maxLength="32"
                         android:padding="5dp"
                         android:paddingStart="15dp"
                         android:paddingEnd="15dp"
                         android:textColor="@color/white"
                         android:textColorHint="@color/white"
+                        android:gravity="center_horizontal"
                         android:textSize="20sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -286,11 +291,10 @@
                     android:drawablePadding="8dp"
                     android:gravity="center_vertical"
                     android:paddingHorizontal="12dp"
-                    android:text="10:27"
+                    android:text="⏰ 10:27"
                     android:textColor="@android:color/white"
                     android:textSize="18sp"
-                    android:textStyle="bold"
-                    app:drawableStartCompat="@drawable/ic_clock" />
+                    android:textStyle="bold"/>
             </LinearLayout>
 
             <!-- Nhãn Decorative -->

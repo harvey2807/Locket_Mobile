@@ -72,9 +72,15 @@ public class Image {
         this.receiverIds = receiverIds;
     }
 
-    @NonNull
     @Override
     public String toString() {
-        return "[" +imageId + ":" +urlImage + ":"+caption +":"+timestamp +":"+senderId +":"+receiverIds+"]";
+        return "Image{" +
+                "imageId='" + imageId + '\'' +
+                ", urlImage='" + urlImage + '\'' +
+                ", caption='" + caption + '\'' +
+                ", timestamp=" + timestamp +
+                ", senderId='" + senderId + '\'' +
+                ", receiverIds=" + receiverIds +
+                '}';
     }
 }

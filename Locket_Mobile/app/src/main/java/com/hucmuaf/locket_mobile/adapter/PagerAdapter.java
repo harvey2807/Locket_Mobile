@@ -11,6 +11,9 @@ import com.hucmuaf.locket_mobile.fragment.PageReactFragment;
 
 public class PagerAdapter extends FragmentStateAdapter {
     private String userId;
+    private String initialImageId;
+    private String initialFriendId;
+    private String initialFriendName;
     private PageHomeFragment pageHomeFragment;
     private PageReactFragment pageReactFragment;
 
@@ -25,7 +28,19 @@ public class PagerAdapter extends FragmentStateAdapter {
         pageHomeFragment.setArguments(bundle);
 
         pageReactFragment = new PageReactFragment();
-        pageReactFragment.setArguments(bundle);
+//        pageReactFragment.setArguments(bundle);
+    }
+
+    public void setInitialImageData(String imageId, String friendId, String friendName) {
+        this.initialImageId = imageId;
+        this.initialFriendId = friendId;
+        this.initialFriendName = friendName;
+        Bundle reactBundle = new Bundle();
+        reactBundle.putString("userId", userId);
+        reactBundle.putString("imageId", imageId);
+        reactBundle.putString("friendId", friendId);
+        reactBundle.putString("friendName", friendName);
+        pageReactFragment.setArguments(reactBundle);
     }
 
     @NonNull

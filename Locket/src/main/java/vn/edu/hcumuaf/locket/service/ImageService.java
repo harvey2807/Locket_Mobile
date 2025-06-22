@@ -6,10 +6,8 @@ import vn.edu.hcumuaf.locket.model.entity.Image;
 import vn.edu.hcumuaf.locket.responsitory.FriendRequestDao;
 import vn.edu.hcumuaf.locket.responsitory.ImageDao;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 

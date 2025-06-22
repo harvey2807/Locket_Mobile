@@ -54,7 +54,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="50dp"
-            android:hint="Nhập tên">
+            android:hint="Nhập biệt danh">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/teName"

@@ -8,8 +8,11 @@ public class FriendRequest {
     private String receiverId;
     private FriendRequestStatus status;
     private long timestamp;
+    private String senderName;
+    private User sender;
 
-    public FriendRequest(){}
+    public FriendRequest() {
+    }
 
     public FriendRequest(String friendRequestId, String senderId, String receiverId, FriendRequestStatus status, long timestamp) {
         this.friendRequestId = friendRequestId;
@@ -57,5 +60,21 @@ public class FriendRequest {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getSenderName() {
+        return senderName;
+    }
+
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
+    }
+
+    public User getSender() {
+        return sender;
+    }
+
+    public void setSender(User sender) {
+        this.sender = sender;
     }
 }

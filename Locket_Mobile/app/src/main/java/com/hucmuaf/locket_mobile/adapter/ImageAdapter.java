@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import com.hucmuaf.locket_mobile.modedb.Image;
 import com.hucmuaf.locket_mobile.R;
 import com.bumptech.glide.Glide;
-import com.hucmuaf.locket_mobile.holder.PhotoViewHolder;
+import com.hucmuaf.locket_mobile.holder.ImageViewHolder;
 import com.hucmuaf.locket_mobile.inteface.OnImageClickListener;
 
 import androidx.annotation.NonNull;
@@ -16,18 +16,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class ImageAdapter extends RecyclerView.Adapter<PhotoViewHolder> {
+public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder> {
 
     private List<Image> imageList;
     private Context context;
     private OnImageClickListener listener;
-
-    //Xử lý sự kiện khu người dùng nhấn vào một ảnh
-    //?????
-//    public interface OnImageClickListener {
-//        void onImageClick(Image image);
-//    }
-    //check in android can not create contructor with parameter here
+    
     public ImageAdapter(Context context, List<Image> photoList, OnImageClickListener listener) {
         this.context = context;
         this.imageList = photoList;
@@ -43,19 +37,26 @@ public class ImageAdapter extends RecyclerView.Adapter<PhotoViewHolder> {
     //
     @NonNull
     @Override
-    public PhotoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_image, parent, false);
-        return new PhotoViewHolder(view);
+        return new ImageViewHolder(view);
     }
 
     //Sử dụng Glide để tải hình ảnh từ URL và hiển thị trong ImageView.
     @Override
-    public void onBindViewHolder(@NonNull PhotoViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
         Image photo = imageList.get(position);
-        Glide.with(context)
-                .load(photo.getUrlImage())
-                .placeholder(R.drawable.image1) //ảnh mặc định hiển thị trước khi ảnh chính được tải xong
-                .into(holder.getImageView());
+        String url = photo.getUrlImage();
+        if (url != null && !url.isEmpty()) {
+            Glide.with(context)
+                    .load(url)
+                    .placeholder(R.drawable.default_img) // ảnh tạm khi đang load
+                    .error(R.drawable.default_img) // ảnh khi load lỗi
+                    .into(holder.getImageView());
+        }{
+            // Nếu ảnh null thì đặt ảnh mặc định
+            holder.getImageView().setImageResource(R.drawable.default_img);
+        }
 
         holder.getImageView().setOnClickListener(v -> {
             if (listener != null) listener.onImageClick(photo);

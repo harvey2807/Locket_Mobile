@@ -11,21 +11,23 @@ public class Message {
 
     @SerializedName("receiverId")
     private String receiverId;
-
+    //    @SerializedName("imageId")
+//    private String imageId;
     @SerializedName("content")
     private String content;
     @SerializedName("timestamp")
-    private String timestamp;
+    private long timestamp;
     @SerializedName("type")
     private String type;
 
     public Message() {
     }
 
-    public Message(String id, String senderId, String receiverId, String content, String timestamp, String type) {
-        this.id = id;
+    public Message(String senderId, String receiverId, String content, long timestamp, String type) {
+//        this.id = id;
         this.senderId = senderId;
         this.receiverId = receiverId;
+//        this.imageId = imageId;
         this.content = content;
         this.timestamp = timestamp;
         this.type = type;
@@ -63,11 +65,19 @@ public class Message {
         this.content = content;
     }
 
-    public String getTimestamp() {
+//    public void getImageId(String imageId) {
+//        this.imageId = imageId;
+//    }
+//
+//    public String getImageId() {
+//        return imageId;
+//    }
+
+    public long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(String timestamp) {
+    public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -77,5 +87,9 @@ public class Message {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public enum MessageType {
+        JOIN, LEAVE, CHAT
     }
 }

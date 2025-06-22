@@ -1,6 +1,6 @@
 package com.hucmuaf.locket_mobile.modedb;
 
-public class SaveImageResponse {
+public class SaveResponse {
     private String message;
     public String getMessage(){
         return message;

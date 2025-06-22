@@ -8,6 +8,7 @@
 /dataSources.local.xml
 
 src/main/resources/modis-admin-keys.json
+src/main/resources/application.yml
 src/main/resources/cloudinary.properties
 
 *.iml

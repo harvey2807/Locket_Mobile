@@ -62,7 +62,80 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/friend_react_to_you"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="110dp"
+            android:background="@drawable/circle_border"
+            android:elevation="2dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="10dp"
+            android:visibility="gone">
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@mipmap/three_star" />
+            <TextView
+                android:id="@+id/activity_reaction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hoạt động"
+                android:textColor="#D1CFCF"
+                android:textColorHint="@color/light_gray"
+                android:textSize="22dp"
+                android:textStyle="bold"
+                android:layout_marginStart="5dp"
+                />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/friend_react_recycle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+            </androidx.recyclerview.widget.RecyclerView>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/temp_comment_view"
+            android:layout_width="365dp"
+            android:layout_height="60dp"
+            android:layout_gravity="bottom|center"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="110dp"
+            android:background="@drawable/circle_border"
+            android:elevation="0dp"
+            android:gravity="center"
+            android:visibility="gone">
 
+            <EditText
+                android:id="@+id/comment_edit_text"
+                android:layout_width="280dp"
+                android:layout_height="30dp"
+                android:padding="0dp"
+                android:gravity="left"
+                android:background="@android:color/transparent"
+                android:hint="Gửi tin nhắn ..."
+                android:textColor="#ffffff"
+                android:textColorHint="@color/light_gray"
+                android:textFontWeight="@integer/material_motion_duration_long_2"
+                android:textSize="22dp" />
+            <Button
+                android:id="@+id/send_comment"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="15dp"
+                android:background="@mipmap/send_message"
+                android:textSize="28sp" />
+
+        </LinearLayout>
         <LinearLayout
             android:id="@+id/react_emoji_comment"
             android:layout_width="365dp"
@@ -72,13 +145,17 @@
             android:layout_marginBottom="110dp"
             android:background="@drawable/circle_border"
             android:elevation="1dp"
-            android:gravity="center">
+            android:gravity="center"
+            android:visibility="visible">
 
             <TextView
+                android:id="@+id/comment"
                 android:layout_width="180dp"
                 android:layout_height="30dp"
                 android:layout_marginStart="5dp"
+                android:padding="0dp"
                 android:gravity="center"
+                android:background="@android:color/transparent"
                 android:hint="Gửi tin nhắn ..."
                 android:textColor="#ffffff"
                 android:textColorHint="@color/light_gray"
@@ -86,6 +163,7 @@
                 android:textSize="22dp" />
 
             <androidx.emoji2.widget.EmojiButton
+                android:id="@+id/heart_emoji"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:background="@color/hint_white"
@@ -93,6 +171,7 @@
                 android:textSize="28sp" />
 
             <androidx.emoji2.widget.EmojiButton
+                android:id="@+id/happy_emoji"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:background="@color/hint_white"
@@ -100,6 +179,7 @@
                 android:textSize="28sp" />
 
             <androidx.emoji2.widget.EmojiButton
+                android:id="@+id/star_eye_emoji"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:background="@color/hint_white"
@@ -112,6 +192,17 @@
                 android:layout_height="35dp"
                 android:src="@mipmap/add_reaction" />
         </LinearLayout>
+        <EditText
+            android:id="@+id/temp_et"
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            android:background="@android:color/transparent"
+            android:textColor="@android:color/transparent"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:cursorVisible="false"
+            android:inputType="text"
+            />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -150,6 +241,7 @@
                 android:src="@mipmap/pending" />
         </LinearLayout>
     </FrameLayout>
+
 
     <!-- Lớp phủ bán trong suốt -->
     <View

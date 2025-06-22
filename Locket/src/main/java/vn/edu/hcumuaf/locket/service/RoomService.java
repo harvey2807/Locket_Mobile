@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
-import vn.edu.hcumuaf.locket.model.Message;
 import vn.edu.hcumuaf.locket.model.entity.Rooms;
 import vn.edu.hcumuaf.locket.responsitory.RoomDao;
 

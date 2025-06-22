@@ -15,26 +15,23 @@ import java.util.List;
 import java.util.Set;
 
 public class ImageResponsitory {
-    private DatabaseReference imagesRef;
-
-    //why use interface class here??? Who is create this class?
-    public interface onImageLoaded {
-        void onSuccess(List<Image> images);
-
-        void onFailure(Exception e);
-    }
-
-    public ImageResponsitory() {
-        this.imagesRef = FirebaseService.getInstance().getDatabase().getReference("images");
+    private final DatabaseReference imagesRef;
+    private ValueEventListener currentListener;
+    public ImageResponsitory(FirebaseService firebaseService) {
+        this.imagesRef = firebaseService.getDatabase().getReference("images");
     }
 
     //lấy toàn bộ ảnh của user và ảnh từ bạn bè gửi tới user
-    public void getAllImagesByUserId(String userId, Set<String> friendIds, onImageLoaded callback) {
-        imagesRef.addValueEventListener(new ValueEventListener() {
+    public void getAllImagesByUserId(String userId, Set<String> friendIds, ImageLoadCallback callback) {
+        if (currentListener != null) {
+            imagesRef.removeEventListener(currentListener);
+        }
+
+        currentListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<Image> result = new ArrayList<>();
-                for (DataSnapshot snap : snapshot.getChildren()) {
+                for (DataSnapshot snap: snapshot.getChildren()){
                     Image image = snap.getValue(Image.class);
                     if (image == null) continue;
 
@@ -55,6 +52,15 @@ public class ImageResponsitory {
             public void onCancelled(@NonNull DatabaseError error) {
                 callback.onFailure(new Exception(error.getMessage()));
             }
-        });
+        };
+        imagesRef.addValueEventListener(currentListener);
+    }
+
+    //Gỡ listener khi không cần nữa
+    public void removeListener() {
+        if (currentListener != null) {
+            imagesRef.removeEventListener(currentListener);
+            currentListener = null;
+        }
     }
 }

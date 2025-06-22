@@ -1,14 +1,14 @@
 package vn.edu.hcumuaf.locket.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.*;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import vn.edu.hcumuaf.locket.model.Message;
 import vn.edu.hcumuaf.locket.service.MessageService;
 
@@ -56,7 +56,7 @@ public class ChatController {
     @MessageMapping("/chat.send")
     public void sendMessage(@Payload Message chatMessage) {
         try {
-            service.saveMessage(chatMessage);
+//            service.saveMessage(chatMessage);
             messagingTemplate.convertAndSendToUser(
                     chatMessage.getReceiverId(),
                     "/topic/messages",
@@ -73,8 +73,18 @@ public class ChatController {
         }
     }
 
+    @PostMapping("/send")
+    public ResponseEntity<?> sendMessageViaRest(@RequestBody Message chatMess) {
+        try {
+            service.saveMessage(chatMess);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save message");
+        }
+    }
+
     @GetMapping("topic/{senderId}")
     public CompletableFuture<List<Message>> getMessage(@PathVariable("senderId") String senderId) {
-        return service.getMessagesByReceiverId(senderId);
+        return service.getMessagesByUserId(senderId);
     }
 }

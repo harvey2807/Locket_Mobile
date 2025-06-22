@@ -49,6 +49,16 @@ public class PageComponentActivity extends AppCompatActivity {
 
         ViewPager2 pages = findViewById(R.id.main_viewpager);
         PagerAdapter pagerAdapter = new PagerAdapter(this, userId);
+        // Nhận từ AllImageActivity
+        Intent intent = getIntent();
+        String imageId = intent.getStringExtra("imageId");
+        String friendId = intent.getStringExtra("friendId");
+        String friendName = intent.getStringExtra("friendName");
+        int pageIndex = intent.getIntExtra("pageIndex", 0); //Mặc định là trang home
+
+        // Truyền imageId vào adapter
+        pagerAdapter.setInitialImageData(imageId, friendId, friendName);
         pages.setAdapter(pagerAdapter);
+        pages.setCurrentItem(pageIndex, false);
     }
 }

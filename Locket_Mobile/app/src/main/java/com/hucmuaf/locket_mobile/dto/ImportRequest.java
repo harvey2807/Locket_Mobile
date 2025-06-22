@@ -1,13 +1,9 @@
 package com.hucmuaf.locket_mobile.dto;
 
-import com.google.gson.annotations.SerializedName;
 
-//Where is token to SerializedName annotation can map value to JSON key?
 public class ImportRequest {
-    @SerializedName("userId")
     private String userId;
 
-    @SerializedName("token")
     private String token;
 
     public ImportRequest() {

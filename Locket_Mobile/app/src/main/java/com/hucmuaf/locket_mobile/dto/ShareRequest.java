@@ -1,12 +1,9 @@
 package com.hucmuaf.locket_mobile.dto;
 
-import com.google.gson.annotations.SerializedName;
 
 public class ShareRequest {
-    @SerializedName("userId")
     private String userId;
     
-    @SerializedName("message")
     private String message;
 
     public ShareRequest() {}

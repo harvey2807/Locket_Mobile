@@ -54,13 +54,16 @@
                 stateVisible: bàn phím sẽ hiển thị nếu có EditText được focus.-->
 
 
-        <activity android:name=".activity.auth.AllImageActivity" />
+
+
+        <activity android:name=".activity.AllImageActivity" />
         <activity android:name=".activity.auth.InfoActivity" />
         <activity android:name=".activity.ShowImageActivity"/>
         <activity android:name=".activity.ListFriendActivity" />
+        <activity android:name=".activity.PageComponentActivity"/>
         <activity android:name=".activity.HomeActivity" />
-        <activity android:name=".activity.PageComponentActivity" />
-<!--        <activity android:name=".MessageActivity"/>-->
+        <activity android:name=".activity.ChatActivity"/>
+        <!--        <activity android:name=".MessageActivity"/>-->
 
     </application>
 </manifest>

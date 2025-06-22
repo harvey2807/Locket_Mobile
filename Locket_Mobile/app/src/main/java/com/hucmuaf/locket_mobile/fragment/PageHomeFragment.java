@@ -21,6 +21,7 @@ import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.media.ExifInterface;
 import android.media.Image;
 import android.media.ImageReader;
 import android.os.Bundle;
@@ -178,7 +179,7 @@ public class PageHomeFragment extends Fragment {
                 public void onClick(View v) {
                     onPause();
                     isFrontCamera = !isFrontCamera; // đổi chiều
-                    if(textureView.isAvailable()){
+                    if (textureView.isAvailable()) {
                         openCamera(width, height);
                     }
                 }
@@ -268,9 +269,9 @@ public class PageHomeFragment extends Fragment {
             new TextureView.SurfaceTextureListener() {
                 @Override
                 public void onSurfaceTextureAvailable(@NonNull SurfaceTexture surfaceTexture, int width, int height) {
-                    if(textureView.isAvailable()){
+                    if (textureView.isAvailable()) {
                         openCamera(width, height);
-                    }else{
+                    } else {
                         textureView.setSurfaceTextureListener(surfaceTextureListener);
                     }
                 }
@@ -352,24 +353,25 @@ public class PageHomeFragment extends Fragment {
             Surface surface = new Surface(texture);
             captureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             captureRequestBuilder.addTarget(surface);
-
-            cameraDevice.createCaptureSession(Collections.singletonList(surface), new CameraCaptureSession.StateCallback() {
-                @Override
-                public void onConfigured(@NonNull CameraCaptureSession session) {
-                    cameraCaptureSession = session;
-                    try {
-                        captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
-                        session.setRepeatingRequest(captureRequestBuilder.build(), null, null);
-                    } catch (CameraAccessException e) {
-                        e.printStackTrace();
+            if (surface.isValid()) {
+                cameraDevice.createCaptureSession(Collections.singletonList(surface), new CameraCaptureSession.StateCallback() {
+                    @Override
+                    public void onConfigured(@NonNull CameraCaptureSession session) {
+                        cameraCaptureSession = session;
+                        try {
+                            captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+                            session.setRepeatingRequest(captureRequestBuilder.build(), null, null);
+                        } catch (CameraAccessException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
 
-                @Override
-                public void onConfigureFailed(@NonNull CameraCaptureSession session) {
-                    Toast.makeText(activity, "Cấu hình camera thất bại!", Toast.LENGTH_SHORT).show();
-                }
-            }, null);
+                    @Override
+                    public void onConfigureFailed(@NonNull CameraCaptureSession session) {
+                        Toast.makeText(activity, "Cấu hình camera thất bại!", Toast.LENGTH_SHORT).show();
+                    }
+                }, null);
+            }
 
         } catch (CameraAccessException e) {
             e.printStackTrace();
@@ -440,23 +442,53 @@ public class PageHomeFragment extends Fragment {
                 Image image = null;
                 try {
                     image = reader1.acquireLatestImage();
+                    if (image == null) return;
+
                     ByteBuffer buffer = image.getPlanes()[0].getBuffer();
                     byte[] bytes = new byte[buffer.remaining()];
                     buffer.get(bytes);
 
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    int actualRotation = getJpegOrientation(characteristics, activity.getWindowManager().getDefaultDisplay().getRotation());
+                    // Ghi ảnh tạm ra file
+                    try (FileOutputStream fos = new FileOutputStream(file)) {
+                        fos.write(bytes);
+                    }
+
+                    // Đọc Exif
+                    ExifInterface exif = new ExifInterface(file.getAbsolutePath());
+                    int orientation = exif.getAttributeInt(
+                            ExifInterface.TAG_ORIENTATION,
+                            ExifInterface.ORIENTATION_NORMAL
+                    );
 
                     Matrix matrix = new Matrix();
-                    if (actualRotation != 0) {
-                        matrix.postRotate(actualRotation);
+
+                    // Xoay trước
+                    switch (orientation) {
+                        case ExifInterface.ORIENTATION_ROTATE_90:
+                            matrix.postRotate(90);
+                            break;
+                        case ExifInterface.ORIENTATION_ROTATE_180:
+                            matrix.postRotate(180);
+                            break;
+                        case ExifInterface.ORIENTATION_ROTATE_270:
+                            matrix.postRotate(270);
+                            break;
                     }
+
+                    // Lật gương nếu camera trước
                     if (isFrontCamera) {
                         matrix.postScale(-1, 1);
                     }
 
-                    bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-                    saveBitmapToFile(bitmap, file);
+                    // Tạo bitmap mới
+                    Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                    Bitmap rotatedBitmap = Bitmap.createBitmap(
+                            bitmap, 0, 0,
+                            bitmap.getWidth(), bitmap.getHeight(),
+                            matrix, true
+                    );
+
+                    saveBitmapToFile(rotatedBitmap, file);
 
                     activity.runOnUiThread(() -> {
                         closeCamera();
@@ -465,12 +497,14 @@ public class PageHomeFragment extends Fragment {
                         intent.putExtra("userId", userId);
                         startActivity(intent);
                     });
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
                     if (image != null) image.close();
                 }
             };
+
 
             reader.setOnImageAvailableListener(readerListener, mBackgroundHandler);
 
@@ -570,21 +604,38 @@ public class PageHomeFragment extends Fragment {
     }
 
 
-    private int getJpegOrientation(CameraCharacteristics c, int deviceRotation) {
-        int sensorOrientation = c.get(CameraCharacteristics.SENSOR_ORIENTATION);
+    //    private int getJpegOrientation(CameraCharacteristics c, int deviceRotation) {
+//        int sensorOrientation = c.get(CameraCharacteristics.SENSOR_ORIENTATION);
+//        int rotation = ORIENTATIONS.get(deviceRotation);
+//
+//        Integer lensFacing = c.get(CameraCharacteristics.LENS_FACING);
+//        if (lensFacing == null) return 0;
+//
+//        int jpegOrientation;
+//        if (lensFacing == CameraCharacteristics.LENS_FACING_FRONT) {
+//            jpegOrientation = (sensorOrientation + rotation) % 360;  // Chỉ tính cộng thôi
+//            Log.e("Xoay ảnh này", "Giá trị khi xoay ảnh camera trước: " + jpegOrientation);
+//
+//        } else {
+//            jpegOrientation = (sensorOrientation - rotation + 360) % 360;
+//        }
+//        return jpegOrientation;
+//    }
+    private int getJpegOrientation(CameraCharacteristics characteristics, int deviceRotation) {
+        int sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+        Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
+        if (facing == null) return 0;
+
+        // map device rotation (0, 90, 180, 270)
         int rotation = ORIENTATIONS.get(deviceRotation);
 
-        Integer lensFacing = c.get(CameraCharacteristics.LENS_FACING);
-        if (lensFacing == null) return 0;
-
-        int jpegOrientation;
-        if (lensFacing == CameraCharacteristics.LENS_FACING_FRONT) {
-            jpegOrientation = (sensorOrientation + rotation) % 360;  // Chỉ tính cộng thôi
-            Log.e("Xoay ảnh này", "Giá trị khi xoay ảnh camera trước: " + jpegOrientation);
-
+        int orientation;
+        if (facing == CameraCharacteristics.LENS_FACING_FRONT) {
+            orientation = (sensorOrientation - rotation + 360) % 360;
         } else {
-            jpegOrientation = (sensorOrientation - rotation + 360) % 360;
+            orientation = (sensorOrientation - rotation + 360) % 360;
         }
-        return jpegOrientation;
+
+        return orientation;
     }
 }

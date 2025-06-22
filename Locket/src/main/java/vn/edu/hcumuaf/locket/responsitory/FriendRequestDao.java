@@ -1,18 +1,15 @@
 package vn.edu.hcumuaf.locket.responsitory;
 
-import com.google.api.core.ApiFuture;
 import com.google.firebase.database.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
-import vn.edu.hcumuaf.locket.model.entity.FriendRequest;
 import vn.edu.hcumuaf.locket.model.FriendRequestStatus;
+import vn.edu.hcumuaf.locket.model.entity.FriendRequest;
 
 
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executor;
 
 @Repository
 public class FriendRequestDao {

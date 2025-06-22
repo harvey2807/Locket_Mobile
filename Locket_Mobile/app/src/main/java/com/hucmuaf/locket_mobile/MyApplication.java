@@ -5,8 +5,8 @@ import android.app.Application;
 import androidx.emoji2.bundled.BundledEmojiCompatConfig;
 import androidx.emoji2.text.EmojiCompat;
 
-//import androidx.emoji.bundled.BundledEmojiCompatConfig;
-//import androidx.emoji.text.EmojiCompat;
+import com.vanniktech.emoji.EmojiManager;
+import com.vanniktech.emoji.google.GoogleEmojiProvider;
 
 public class MyApplication extends Application {
 
@@ -15,5 +15,8 @@ public class MyApplication extends Application {
         super.onCreate();
         EmojiCompat.Config config = new BundledEmojiCompatConfig(this);
         EmojiCompat.init(config);
+
+        // Cài đặt Emoji provider
+        EmojiManager.install(new GoogleEmojiProvider());
     }
 }

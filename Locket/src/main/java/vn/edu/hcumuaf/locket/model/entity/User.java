@@ -1,30 +1,19 @@
 package vn.edu.hcumuaf.locket.model.entity;
 
-import jakarta.persistence.*;
 
-@Entity
-@Table(name = "users")
 public class User {
-   @Id
-   @Column(name = "user_id")
    private String userId;
-   
-   @Column(name = "user_name")
+
    private String userName;
-   
-   @Column(name = "full_name")
+
    private String fullName;
-   
-   @Column(name = "email")
+
    private String email;
-   
-   @Column(name = "phone_number")
+
    private String phoneNumber;
-   
-   @Column(name = "url_avatar")
+
    private String urlAvatar;
-   
-   @Column(name = "password")
+
    private String password;
 
     public User() {
@@ -39,14 +28,6 @@ public class User {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.urlAvatar = urlAvatar;
-        this.password = password;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -96,5 +77,13 @@ public class User {
 
     public void setUrlAvatar(String urlAvatar) {
         this.urlAvatar = urlAvatar;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

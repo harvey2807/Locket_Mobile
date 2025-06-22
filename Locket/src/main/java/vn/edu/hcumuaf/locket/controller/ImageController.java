@@ -45,6 +45,7 @@ public class ImageController {
 
     @GetMapping("/all/{userId}")
     public CompletableFuture<ResponseEntity<List<Image>>> getAllImagesByUserId(@PathVariable String userId) {
+        System.out.println("Chay controller getALlImage roi nay");
         return imageService.getAllImagesByUserId(userId)
                 .thenApply(ResponseEntity::ok)
                 .exceptionally(ex -> ResponseEntity.internalServerError().build());

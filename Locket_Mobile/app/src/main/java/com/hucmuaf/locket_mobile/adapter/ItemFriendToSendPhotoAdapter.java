@@ -50,8 +50,8 @@ public class ItemFriendToSendPhotoAdapter extends RecyclerView.Adapter<ItemFrien
 
     @Override
     public void onBindViewHolder(@NonNull ItemFriendToSendPhotoHolder holder, int position) {
+        User u = itemList.get(position);
         if (allSelected) {
-            User u = itemList.get(position);
             String imageName = u.getUrlAvatar();
             holder.bind(u, listenter);
             // Load ảnh từ URL bằng Glide
@@ -65,7 +65,6 @@ public class ItemFriendToSendPhotoAdapter extends RecyclerView.Adapter<ItemFrien
             holder.setSelected(false);
             holder.getItemFriend().setBackground(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.circle_border_gray));
         } else {
-            User u = itemList.get(position);
             String imageName = u.getUrlAvatar();
             holder.bind(u, listenter);
             // Load ảnh từ URL bằng Glide

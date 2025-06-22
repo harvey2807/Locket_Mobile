@@ -1,6 +1,5 @@
 package vn.edu.hcumuaf.locket.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.hcumuaf.locket.dto.FriendListResponse;
@@ -8,8 +7,8 @@ import vn.edu.hcumuaf.locket.dto.SearchUserRequest;
 import vn.edu.hcumuaf.locket.dto.FriendRequestDto;
 import vn.edu.hcumuaf.locket.dto.ShareRequest;
 import vn.edu.hcumuaf.locket.dto.ImportRequest;
+import vn.edu.hcumuaf.locket.model.entity.FriendRequest;
 import vn.edu.hcumuaf.locket.model.entity.User;
-import vn.edu.hcumuaf.locket.model.FriendRequest;
 import vn.edu.hcumuaf.locket.service.FriendListService;
 import vn.edu.hcumuaf.locket.responsitory.UserDao;
 
@@ -64,6 +63,7 @@ public class FriendListController {
                 .thenApply(ResponseEntity::ok)
                 .exceptionally(ex -> ResponseEntity.badRequest().body("Failed to reject friend request: " + ex.getMessage()));
     }
+
     @DeleteMapping("/remove-friend/{userId}/{friendId}")
     public CompletableFuture<ResponseEntity<String>> removeFriend(@PathVariable String userId, @PathVariable String friendId) {
         return friendListService.removeFriend(userId, friendId)
@@ -84,6 +84,14 @@ public class FriendListController {
                 .thenApply(ResponseEntity::ok)
                 .exceptionally(ex -> ResponseEntity.badRequest().build());
     }
+
+    @GetMapping("/sent-requests/{userId}")
+    public CompletableFuture<ResponseEntity<List<FriendRequest>>> getSentRequests(@PathVariable String userId) {
+        return friendListService.getSentRequests(userId)
+                .thenApply(ResponseEntity::ok)
+                .exceptionally(ex -> ResponseEntity.badRequest().build());
+    }
+
     @PostMapping("/share/{platform}")
     public CompletableFuture<ResponseEntity<String>> shareToSocialMedia(@PathVariable String platform, @RequestBody ShareRequest request) {
         return friendListService.shareToSocialMedia(platform, request.getUserId(), request.getMessage())
@@ -123,4 +131,43 @@ public class FriendListController {
                 })
                 .exceptionally(ex -> ResponseEntity.badRequest().<String>build());
     }
-} 
+
+    @GetMapping("/user/{userId}")
+    public CompletableFuture<ResponseEntity<User>> getUserById(@PathVariable String userId) {
+        return userDao.findUserById(userId)
+                .thenApply(user -> {
+                    if (user != null) {
+                        return ResponseEntity.ok(user);
+                    } else {
+                        return ResponseEntity.notFound().<User>build();
+                    }
+                })
+                .exceptionally(ex -> ResponseEntity.badRequest().<User>build());
+    }
+
+    @GetMapping("/request-status/{userId1}/{userId2}")
+    public CompletableFuture<ResponseEntity<FriendRequest>> getFriendRequestStatus(@PathVariable String userId1, @PathVariable String userId2) {
+        return friendListService.getFriendRequestStatus(userId1, userId2)
+                .thenApply(request -> {
+                    if (request != null) {
+                        return ResponseEntity.ok(request);
+                    } else {
+                        return ResponseEntity.notFound().<FriendRequest>build();
+                    }
+                })
+                .exceptionally(ex -> ResponseEntity.badRequest().<FriendRequest>build());
+    }
+
+    @PutMapping("/cancel-request/{requestId}")
+    public CompletableFuture<ResponseEntity<String>> cancelFriendRequest(@PathVariable String requestId) {
+        return friendListService.cancelFriendRequest(requestId)
+                .thenApply(result -> {
+                    System.out.println("Successfully cancelled request: " + requestId);
+                    return ResponseEntity.ok(result);
+                })
+                .exceptionally(ex -> {
+                    System.out.println("Error cancelling request " + requestId + ": " + ex.getMessage());
+                    return ResponseEntity.badRequest().body("Failed to cancel friend request: " + ex.getMessage());
+                });
+    }
+}

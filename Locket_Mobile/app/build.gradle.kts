@@ -43,7 +43,8 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     // Firestore
-
+    //recycle view
+    implementation("androidx.recyclerview:recyclerview:1.4.0")
     // Camera dependencies
     implementation("androidx.camera:camera-core:1.3.0")
     implementation("androidx.camera:camera-camera2:1.3.0")
@@ -75,6 +76,9 @@ dependencies {
 
     // Cloudinary
     implementation ("com.cloudinary:cloudinary-android:2.2.0")
+
+    implementation ("com.vanniktech:emoji-google:0.16.0")
+    implementation ("com.vanniktech:emoji:0.16.0")
 
 }
 
