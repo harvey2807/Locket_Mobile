@@ -4,7 +4,6 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-//total friend, max friend, friends, suggestions???
 public class FriendListResponse {
     @SerializedName("friends")
     private List<User> friends;
