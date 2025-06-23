@@ -254,7 +254,10 @@ public class PageReactFragment extends Fragment {
                             public void onSuccess(List<Image> images) {
                                 // Xử lý danh sách ảnh ở đây
                                 pages = images;
-                                if (!usersOfPages.contains(currUser)) usersOfPages.add(currUser);
+                                if (!usersOfPages.contains(currUser)) {
+                                    currUser.setFullName("Tôi");
+                                    usersOfPages.add(currUser);
+                                }
                                 titleFriend.setText(user.getFullName());
                                 friendId = user.getUserId();
                                 friendName = user.getFullName();
@@ -283,7 +286,10 @@ public class PageReactFragment extends Fragment {
                         pages.clear();
                         // Xử lý danh sách ảnh ở đây
                         pages = images;
-                        if (!usersOfPages.contains(currUser)) usersOfPages.add(currUser);
+                        if (!usersOfPages.contains(currUser)) {
+                            currUser.setFullName("Tôi");
+                            usersOfPages.add(currUser);
+                        }
                         Log.d("React Activity ", "Gửi ảnh qua nè" + pages.toString());
                         Log.d("React Activity ", "Gửi user qua nè" + usersOfPages.toString());
                         PhotoAdapter adapter = new PhotoAdapter(context, pages, usersOfPages);
@@ -513,6 +519,7 @@ public class PageReactFragment extends Fragment {
             Intent intent = new Intent(requireContext(), AllImageActivity.class);
             intent.putExtra("friendId", friendId);
             intent.putExtra("friendName", friendName);
+//            intent.putExtra("currUser", currUser);
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(intent);
         });
