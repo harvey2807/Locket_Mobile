@@ -56,7 +56,7 @@ public class AllImageActivity extends AppCompatActivity{
     private List<User> listFriend;
     private List<Image> allPhotos;
     private String currentUserId = null; //lấy từ session/login
-    private User currUser = null;
+//    private User currUser = null;
     private String friendId = "ALL";
     private String friendName = "Tất cả bạn bè";
 
@@ -73,8 +73,8 @@ public class AllImageActivity extends AppCompatActivity{
         mAuth = FirebaseService.getInstance().getAuth();
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
         currentUserId = firebaseUser != null ? firebaseUser.getUid() : null;
-        getUser(currentUserId);
-        Log.e("CurrUser:", currUser.toString());
+//        getUser(currentUserId);
+//        Log.e("CurrUser:", currUser.toString());
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.all_images);
@@ -193,8 +193,9 @@ public class AllImageActivity extends AppCompatActivity{
 
                     //Thêm mục "Tôi"
                     //Tìm user by id
-                    User owner = currUser;
+                    User owner = new User();
                     owner.setFullName("Tôi");
+                    owner.setUserId(currentUserId);
                     listFriend.add(owner);
                     friendAdapter.updateList(listFriend);
                     Log.e("AllImage: FRIENDS", listFriend.toString());
@@ -262,24 +263,24 @@ public class AllImageActivity extends AppCompatActivity{
         imageAdapter.updateList(listPhotoFilter);
     }
 
-    public void getUser(String userId) {
-        UserService userService = ApiClient.getUserService();
-        Call<User> call = userService.findUserById(userId);
-        call.enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
-                currUser = response.body();
-                assert currUser != null;
-                Log.e("Page React Fragment UserCurr", currUser.toString());
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
-                Log.e("Page React Fragment", "Không lấy được USER");
-
-            }
-        });
-    }
+//    public void getUser(String userId) {
+//        UserService userService = ApiClient.getUserService();
+//        Call<User> call = userService.findUserById(userId);
+//        call.enqueue(new Callback<User>() {
+//            @Override
+//            public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
+//                currUser = response.body();
+//                assert currUser != null;
+//                Log.e("Page React Fragment UserCurr", currUser.toString());
+//            }
+//
+//            @Override
+//            public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
+//                Log.e("Page React Fragment", "Không lấy được USER");
+//
+//            }
+//        });
+//    }
 
     @Override
     protected void onDestroy() {
