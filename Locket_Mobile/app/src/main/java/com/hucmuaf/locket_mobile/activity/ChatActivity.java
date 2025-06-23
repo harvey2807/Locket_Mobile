@@ -270,8 +270,8 @@ public class ChatActivity extends AppCompatActivity {
 
         Request request = new Request.Builder()
 
-                .url("https://locket-mobile.onrender.com/ws")
-//                .url("ws://192.168.0.112:8080/ws")
+//                .url("https://locket-mobile.onrender.com/ws")
+                .url("ws://192.168.196.193:8080/ws")
                 .build();
 
         webSocket = client.newWebSocket(request, new WebSocketListener() {

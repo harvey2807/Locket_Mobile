@@ -22,6 +22,7 @@ import com.hucmuaf.locket_mobile.auth.TokenManager;
 import com.hucmuaf.locket_mobile.modedb.User;
 import com.hucmuaf.locket_mobile.repo.UploadResponse;
 import com.hucmuaf.locket_mobile.service.ApiClient;
+import com.hucmuaf.locket_mobile.service.FirebaseService;
 import com.hucmuaf.locket_mobile.service.ImageService;
 import com.hucmuaf.locket_mobile.service.UserService;
 
@@ -40,11 +41,12 @@ import retrofit2.Response;
 
 public class ProfileActivity extends AppCompatActivity {
     private ImageView imgAvatar;
-    private TextView tvName, tvEditName, editAvatar, tvEditNumber, tvEditEmail;
+    private TextView tvName, tvEditName, editAvatar, tvEditNumber, tvEditEmail, logout;
     private User currUser;
     private String token;
     private String imageUrl;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
+    private FirebaseService firebaseService;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -60,10 +62,20 @@ public class ProfileActivity extends AppCompatActivity {
         editAvatar = findViewById(R.id.EditAvatar);
         tvEditNumber = findViewById(R.id.tvPhoneNumber);
         tvEditEmail = findViewById(R.id.tvEmail);
+        logout = findViewById(R.id.logout);
 
         // Quay lại
         btnBack.setOnClickListener(v -> {
             startActivity(new Intent(ProfileActivity.this, PageComponentActivity.class));
+            finish();
+        });
+
+
+        // Dang xuat
+        logout.setOnClickListener(v -> {
+            FirebaseService firebaseService = FirebaseService.getInstance();
+            firebaseService.getAuth().signOut();
+            startActivity(new Intent(ProfileActivity.this, LoadingActivity.class));
             finish();
         });
 

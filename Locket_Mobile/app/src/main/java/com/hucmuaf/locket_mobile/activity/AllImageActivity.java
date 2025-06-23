@@ -59,6 +59,8 @@ public class AllImageActivity extends AppCompatActivity{
 //    private User currUser = null;
     private String friendId = "ALL";
     private String friendName = "Tất cả bạn bè";
+    private String initialFriendId = null;
+    private String initialFriendName = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,12 +151,12 @@ public class AllImageActivity extends AppCompatActivity{
 
         //Nhận từ reactFragment
         Intent intent = getIntent();
-        friendId = intent.getStringExtra("friendId");
-        friendName = intent.getStringExtra("friendName");
+        initialFriendId = intent.getStringExtra("friendId");
+        initialFriendName = intent.getStringExtra("friendName");
 
-        if (!friendId.equals("ALL")){
-            filterImagesBySenderId(friendId);
-            titleFriend.setText(friendName);
+        if (initialFriendId != null){
+            filterImagesBySenderId(initialFriendId);
+            titleFriend.setText(initialFriendName);
             maskView.setVisibility(View.GONE);
             layout.setVisibility(View.GONE);
         }
