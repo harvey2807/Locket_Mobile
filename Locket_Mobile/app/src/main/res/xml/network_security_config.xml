@@ -31,7 +31,7 @@
         <domain includeSubdomains="true">192.168.1.165</domain>
         <domain includeSubdomains="true">192.168.1.140</domain>
         <domain includeSubdomains="true">192.168.1.170</domain>
-        <domain includeSubdomains="true">192.168.142.193</domain>
+        <domain includeSubdomains="true">192.168.196.193</domain>
         <domain includeSubdomains="true">172.16.1.19</domain>
         <domain includeSubdomains="true">10.50.25.101</domain>
 

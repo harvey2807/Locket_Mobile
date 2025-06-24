@@ -4,21 +4,20 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:background="@color/black"
+    android:background="@color/pallet2"
     android:gravity="center"
     android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/item_friends_send"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="-5dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:background="@drawable/circle_border_gray"
         android:gravity="center">
 
         <androidx.cardview.widget.CardView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             app:cardCornerRadius="20dp"
             app:cardPreventCornerOverlap="false"
             app:cardUseCompatPadding="true">
@@ -28,7 +27,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:src="@mipmap/trathanhtuyen" />
+                android:src="@mipmap/metro" />
 
         </androidx.cardview.widget.CardView>
     </LinearLayout>

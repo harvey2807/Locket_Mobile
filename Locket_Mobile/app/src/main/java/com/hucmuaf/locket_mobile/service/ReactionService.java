@@ -20,5 +20,5 @@ public interface ReactionService {
     Call<SaveResponse> addReaction(@Body Reaction reaction);
 
     @GET("api/reaction/for/{imageId}")
-    Call<List<User>> getFriendReactedToImageYou(@Path("imageId") String imageId);
+    Call<List<String>> getFriendReactedToImageYou(@Path("imageId") String imageId);
 }
