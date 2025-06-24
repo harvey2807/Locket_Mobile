@@ -86,6 +86,7 @@ public class ApiClient {
         }
         return friendListApiService;
     }
+
     public static MessageListAPIService getMessageListApiService() {
         if (messageListAPIService == null) {
             messageListAPIService = getClient().create(MessageListAPIService.class);
@@ -140,7 +141,7 @@ public class ApiClient {
         }
         return authService;
     }
-      
+
     public static FriendRequestService getFriendRequestService(){
         if (friendRequestService == null){
             friendRequestService = getClient().create(FriendRequestService.class);

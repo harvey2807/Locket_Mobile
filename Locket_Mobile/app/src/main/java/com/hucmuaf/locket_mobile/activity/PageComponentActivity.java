@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
@@ -17,6 +18,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.hucmuaf.locket_mobile.R;
+import com.hucmuaf.locket_mobile.activity.auth.ProfileActivity;
 import com.hucmuaf.locket_mobile.adapter.PagerAdapter;
 
 public class PageComponentActivity extends AppCompatActivity {
@@ -33,6 +35,19 @@ public class PageComponentActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        ImageView profile = findViewById(R.id.account);
+        profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String userId = getIntent().getStringExtra("userId"); // lấy userId hiện tại
+
+                Intent in = new Intent(PageComponentActivity.this, ProfileActivity.class);
+                in.putExtra("userId", userId); // truyền sang ProfileActivity
+                startActivity(in);
+            }
+        });
+
 
         String userId = getIntent().getStringExtra("userId");
 

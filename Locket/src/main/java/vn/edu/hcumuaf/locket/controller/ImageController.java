@@ -65,4 +65,19 @@ public class ImageController {
                     return ResponseEntity.status(500).body(error);
                 });
     }
+
+    @DeleteMapping("/delete/{imageId}")
+    public CompletableFuture<ResponseEntity<Map<String, String>>> deleteImageById(@PathVariable String imageId) {
+        return imageService.deleteImageById(imageId)
+                .thenApply(v -> {
+                    Map<String, String> response = new HashMap<>();
+                    response.put("message", "Xóa thành công ảnh với ID: " + imageId);
+                    return ResponseEntity.ok(response);
+                })
+                .exceptionally(ex -> {
+                    Map<String, String> error = new HashMap<>();
+                    error.put("message", "Lỗi khi xóa ảnh: " + ex.getMessage());
+                    return ResponseEntity.status(500).body(error);
+                });
+    }
 }

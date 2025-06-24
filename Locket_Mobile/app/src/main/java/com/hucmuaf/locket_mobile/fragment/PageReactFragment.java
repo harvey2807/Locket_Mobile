@@ -12,6 +12,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -30,6 +31,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.camera.core.imagecapture.ImagePipeline;
@@ -39,10 +41,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.hucmuaf.locket_mobile.R;
+import com.hucmuaf.locket_mobile.activity.ChatActivity;
 import com.hucmuaf.locket_mobile.adapter.FriendReactAdapter;
 import com.hucmuaf.locket_mobile.activity.AllImageActivity;
 import com.hucmuaf.locket_mobile.adapter.ItemFriendAdapter;
@@ -52,6 +56,10 @@ import com.hucmuaf.locket_mobile.modedb.Image;
 import com.hucmuaf.locket_mobile.modedb.Reaction;
 import com.hucmuaf.locket_mobile.modedb.SaveResponse;
 import com.hucmuaf.locket_mobile.modedb.User;
+
+import com.hucmuaf.locket_mobile.model.Message;
+import com.hucmuaf.locket_mobile.model.MessageType;
+
 import com.hucmuaf.locket_mobile.model.FriendListResponse;
 import com.hucmuaf.locket_mobile.repo.ImageLoadCallback;
 import com.hucmuaf.locket_mobile.repo.ImageResponsitory;
@@ -59,6 +67,7 @@ import com.hucmuaf.locket_mobile.service.ApiClient;
 import com.hucmuaf.locket_mobile.service.FirebaseService;
 import com.hucmuaf.locket_mobile.service.FriendRequestService;
 import com.hucmuaf.locket_mobile.service.ImageService;
+import com.hucmuaf.locket_mobile.service.MessageService;
 import com.hucmuaf.locket_mobile.service.OnFriendLoadedListener;
 import com.hucmuaf.locket_mobile.service.OnImagesLoadedListener;
 import com.hucmuaf.locket_mobile.service.ReactionService;
@@ -66,12 +75,20 @@ import com.hucmuaf.locket_mobile.service.UserService;
 import com.vanniktech.emoji.EmojiPopup;
 
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -83,12 +100,20 @@ public class PageReactFragment extends Fragment {
     GestureDetector gestureDetector;
     private List<Image> pages;
     private List<User> usersOfPages;
+    private WebSocket webSocket;
+    private OkHttpClient client;
     private List<User> listFriend;
     private List<User> listFriendReactToYou;
     private String userId = null;
+    private ActivityResultLauncher<Intent> pickImageLauncher;
+    private View temp_comment_view;
+    private EditText commentEdit;
+    private MaterialButton sendButton;
     private String initialImageId = null;
     private String initialFriendId = null;
     private String initialFriendName = null;
+    private String friendId = "ALL";
+    private String friendName = "Tất cả bạn bè";
     private Context context;
     private Activity activity;
     private boolean ignoreNextTextChange = false;
@@ -108,7 +133,7 @@ public class PageReactFragment extends Fragment {
         return inflater.inflate(R.layout.react_emoji_comment, container, false);
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint({"ClickableViewAccessibility", "WrongViewCast"})
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -235,6 +260,8 @@ public class PageReactFragment extends Fragment {
                                     usersOfPages.add(currUser);
                                 }
                                 titleFriend.setText(user.getFullName());
+                                friendId = user.getUserId();
+                                friendName = user.getFullName();
                                 Log.e("React Activity", pages.toString());
                                 PhotoAdapter adapter = new PhotoAdapter(context, pages, usersOfPages);
                                 imageView.setAdapter(adapter);
@@ -260,7 +287,7 @@ public class PageReactFragment extends Fragment {
                         pages.clear();
                         // Xử lý danh sách ảnh ở đây
                         pages = images;
-                        if (!usersOfPages.contains(currUser)){
+                        if (!usersOfPages.contains(currUser)) {
                             currUser.setFullName("Tôi");
                             usersOfPages.add(currUser);
                         }
@@ -491,9 +518,42 @@ public class PageReactFragment extends Fragment {
         flash.setOnClickListener(v -> {
             Log.e("CHUYển SANG", "All Image");
             Intent intent = new Intent(requireContext(), AllImageActivity.class);
+            intent.putExtra("friendId", friendId);
+            intent.putExtra("friendName", friendName);
+//            intent.putExtra("currUser", currUser);
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(intent);
         });
+        commentEdit = view.findViewById(R.id.comment_edit_text);
+        sendButton = view.findViewById(R.id.send_comment);
+        setupClickListeners();
+    }
+
+    @SuppressLint("WrongViewCast")
+    private void setupClickListeners() {
+
+        sendButton.setOnClickListener(v -> {
+            String messageContent = commentEdit.getText().toString();
+            if (!messageContent.isEmpty()) {
+                sendMessage(messageContent);
+                commentEdit.setText("");
+            }
+        });
+        commentEdit.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            if (pickImageLauncher != null) {
+                pickImageLauncher.launch(intent);
+            }
+        });
+
+    }
+
+
+    private void sendMessage(String content) {
+        String id = pages.get(currentPage).getSenderId();
+        Log.w("PageReactFragment", "initialFriendId: " + id);
+        MessageService.getInstance().sendMessage(userId, id, content);
+        Log.w("PageReactFragment", "Sent message: " + content + "from" + userId + " to " + id);
     }
 
     public void reactEmoji(FrameLayout rootView, String userId, String imageId, String icon, long time) {

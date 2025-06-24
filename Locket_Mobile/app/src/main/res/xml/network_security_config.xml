@@ -23,18 +23,20 @@
         <domain includeSubdomains="true">10.0.185.202</domain>
         <domain includeSubdomains="true">192.168.31.24</domain>
         <domain includeSubdomains="true">172.16.1.25</domain>
-        <domain includeSubdomains="true">10.0.208.94</domain>
         <domain includeSubdomains="true">192.168.1.150</domain>
         <domain includeSubdomains="true">10.51.33.182</domain>
         <domain includeSubdomains="true">192.168.78.24</domain>
         <domain includeSubdomains="true">172.16.1.63</domain>
+        <domain includeSubdomains="true">10.0.208.94</domain>
         <domain includeSubdomains="true">192.168.1.165</domain>
         <domain includeSubdomains="true">192.168.1.140</domain>
         <domain includeSubdomains="true">192.168.1.170</domain>
         <domain includeSubdomains="true">192.168.142.193</domain>
         <domain includeSubdomains="true">172.16.1.19</domain>
-        <domain includeSubdomains="true">192.168.229.24</domain>
+        <domain includeSubdomains="true">10.50.25.101</domain>
+
     </domain-config>
+
     <base-config cleartextTrafficPermitted="true">
         <trust-anchors>
             <certificates src="system" />

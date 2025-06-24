@@ -46,7 +46,8 @@
             android:windowSoftInputMode="adjustResize|stateVisible"/>
         <activity android:name=".activity.auth.LoginActivity"
             android:windowSoftInputMode="adjustResize|stateVisible"/>
-
+        <activity android:name=".activity.auth.ProfileActivity"
+            android:windowSoftInputMode="adjustResize|stateVisible"/>
         <activity android:name=".activity.MessageActivity"
             android:windowSoftInputMode="adjustResize|stateVisible"/>
 

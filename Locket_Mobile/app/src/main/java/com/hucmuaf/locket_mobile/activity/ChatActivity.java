@@ -71,6 +71,7 @@ public class ChatActivity extends AppCompatActivity {
     private WebSocket webSocket;
     private OkHttpClient client;
     private String imageId;
+//    private String avtUrl;
     private MessageRepository messageRepository;
 
 //    private static final String WS_SERVER_URL = "ws://192.168.181.190:8080/ws"; // Fixed URL format
@@ -95,10 +96,12 @@ public class ChatActivity extends AppCompatActivity {
                 return;
             }
 
+            messageList = new ArrayList<>();
             Log.d(TAG, "Current user: " + currentUserId + ", Other user: " + otherUserId);
             initializeViews();
+            recyclerViewMessages.setLayoutManager(new LinearLayoutManager(this));
             loadUserProfile(otherUserId);
-            setupRecyclerView();
+//            setupRecyclerView();
             loadInitialMessages();
             new android.os.Handler().postDelayed(this::connectWebSocket, 1000);
 
@@ -120,7 +123,7 @@ public class ChatActivity extends AppCompatActivity {
         editTextMessage = findViewById(R.id.editTextText);
         sendButton = findViewById(R.id.account15);
         recyclerViewMessages = findViewById(R.id.recyclerViewMessages);
-
+        recyclerViewMessages.setLayoutManager(new LinearLayoutManager(this));
         if (name != null) {
             name.setText("Unknown");
         }
@@ -130,13 +133,13 @@ public class ChatActivity extends AppCompatActivity {
         Log.d(TAG, "Views initialized");
     }
 
-    private void setupRecyclerView() {
-        messageList = new ArrayList<>();
-        messageAdapter = new ChatMessageAdapter(this, messageList, currentUserId, recyclerViewMessages);
-        recyclerViewMessages.setLayoutManager(new LinearLayoutManager(this));
-        recyclerViewMessages.setAdapter(messageAdapter);
-        Log.d(TAG, "RecyclerView initialized");
-    }
+//    private void setupRecyclerView() {
+//        messageList = new ArrayList<>();
+//        messageAdapter = new ChatMessageAdapter(this, messageList, currentUserId, avtUrl, recyclerViewMessages);
+//        recyclerViewMessages.setLayoutManager(new LinearLayoutManager(this));
+//        recyclerViewMessages.setAdapter(messageAdapter);
+//        Log.d(TAG, "RecyclerView initialized");
+//    }
 
     private void setupClickListeners() {
         sendButton.setOnClickListener(v -> {
@@ -216,13 +219,29 @@ public class ChatActivity extends AppCompatActivity {
                     } else {
                         Log.e(TAG, "Name TextView is null");
                     }
-                    if (avtUrl != null && !avtUrl.isEmpty() && avt != null) {
-                        Glide.with(ChatActivity.this)
-                                .load(avtUrl)
-                                .circleCrop()
-                                .error(R.drawable.default_avatar)
-                                .into(avt);
-                        Log.d(TAG, "Avatar URL available: " + avtUrl);
+//                    if (avtUrl != null && !avtUrl.isEmpty() && avt != null) {
+//                        Glide.with(ChatActivity.this)
+//                                .load(avtUrl)
+//                                .circleCrop()
+//                                .error(R.drawable.default_avatar)
+//                                .into(avt);
+//                        Log.d(TAG, "Avatar URL available: " + avtUrl);
+//                    }
+                    if (avtUrl != null && !avtUrl.isEmpty()) {
+                        // Load avatar lên header
+                        if (avt != null) {
+                            Glide.with(ChatActivity.this)
+                                    .load(avtUrl)
+                                    .circleCrop()
+                                    .error(R.drawable.default_avatar)
+                                    .into(avt);
+                        }
+
+                        // Khởi tạo adapter và gán avatar người nhận
+                        messageAdapter = new ChatMessageAdapter(ChatActivity.this,
+                                messageList, currentUserId, avtUrl, recyclerViewMessages);
+                        recyclerViewMessages.setAdapter(messageAdapter);
+                        Log.d(TAG, "Set adapter with receiver avatar");
                     }
 
                     Log.d(TAG, "Loaded user profile successfully for: " + userId);
@@ -250,7 +269,8 @@ public class ChatActivity extends AppCompatActivity {
                 .build();
 
         Request request = new Request.Builder()
-                .url("ws://172.16.1.37:8080/ws")
+
+                .url("https://locket-mobile.onrender.com/ws")
 //                .url("ws://192.168.0.112:8080/ws")
                 .build();
 
@@ -319,19 +339,19 @@ public class ChatActivity extends AppCompatActivity {
                 Log.d("WebSocket", "Sent: " + jsonObject.toString());
             }
             if (api != null) {
-//                api.sendMessage(new Message(currentUserId, otherUserId, message.getContent(), System.currentTimeMillis(), "CHAT"))
+                api.sendMessage(new Message(currentUserId, otherUserId, message.getContent(), System.currentTimeMillis(), "CHAT"))
 //                api.sendMessage(currentUserId, otherUserId, message.getContent())
-//                        .enqueue(new retrofit2.Callback<Void>() {
-//                            @Override
-//                            public void onResponse(retrofit2.Call<Void> call, retrofit2.Response<Void> response) {
-//                                Log.d("API", "Message sent successfully");
-//                            }
-//
-//                            @Override
-//                            public void onFailure(retrofit2.Call<Void> call, Throwable t) {
-//                                Log.e("API", "Failed to send message: " + t.getMessage());
-//                            }
-//                        });
+                        .enqueue(new retrofit2.Callback<Void>() {
+                            @Override
+                            public void onResponse(retrofit2.Call<Void> call, retrofit2.Response<Void> response) {
+                                Log.d("API", "Message sent successfully");
+                            }
+
+                            @Override
+                            public void onFailure(retrofit2.Call<Void> call, Throwable t) {
+                                Log.e("API", "Failed to send message: " + t.getMessage());
+                            }
+                        });
             }
         } catch (Exception e) {
             Log.e("WebSocket", "Error sending message", e);
@@ -339,25 +359,6 @@ public class ChatActivity extends AppCompatActivity {
     }
 
 
-//    private void sendWebSocketMessage(Message message) {
-//        try {
-//            JSONObject jsonObject = new JSONObject();
-//            jsonObject.put("senderId", message.getSenderId());
-//            jsonObject.put("receiverId", message.getReceiverId());
-//            jsonObject.put("content", message.getContent());
-////            jsonObject.put("imageUrl", message.getImageUrl());
-////            jsonObject.put("caption", message.getCaption());
-//            jsonObject.put("timestamp", message.getTimestamp());
-//            jsonObject.put("type", message.getType().toString());
-//
-//            if (webSocket != null) {
-//                webSocket.send(jsonObject.toString());
-//                Log.d("WebSocket", "Sent: " + jsonObject.toString());
-//            }
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     private void sendMessage(String content) {
         Message newMessage = new Message(currentUserId, otherUserId, content, System.currentTimeMillis(), "JOIN");
