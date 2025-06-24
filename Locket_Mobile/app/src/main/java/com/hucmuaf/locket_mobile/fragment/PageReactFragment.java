@@ -32,6 +32,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.camera.core.imagecapture.ImagePipeline;
 import androidx.emoji2.widget.EmojiButton;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -157,7 +158,10 @@ public class PageReactFragment extends Fragment {
                     pages.clear();
                     // Xử lý danh sách ảnh ở đây
                     pages = images;
-                    if (!usersOfPages.contains(currUser)) usersOfPages.add(currUser);
+                    if (!usersOfPages.contains(currUser)) {
+                        currUser.setFullName("Tôi");
+                        usersOfPages.add(currUser);
+                    }
                     titleFriend.setText(tvName.getText());
                     Log.e("React Activity", pages.toString());
                     PhotoAdapter adapter = new PhotoAdapter(context, pages, usersOfPages);
@@ -226,7 +230,10 @@ public class PageReactFragment extends Fragment {
                             public void onSuccess(List<Image> images) {
                                 // Xử lý danh sách ảnh ở đây
                                 pages = images;
-                                if (!usersOfPages.contains(currUser)) usersOfPages.add(currUser);
+                                if (!usersOfPages.contains(currUser)) {
+                                    currUser.setFullName("Tôi");
+                                    usersOfPages.add(currUser);
+                                }
                                 titleFriend.setText(user.getFullName());
                                 Log.e("React Activity", pages.toString());
                                 PhotoAdapter adapter = new PhotoAdapter(context, pages, usersOfPages);
@@ -253,7 +260,10 @@ public class PageReactFragment extends Fragment {
                         pages.clear();
                         // Xử lý danh sách ảnh ở đây
                         pages = images;
-                        if (!usersOfPages.contains(currUser)) usersOfPages.add(currUser);
+                        if (!usersOfPages.contains(currUser)){
+                            currUser.setFullName("Tôi");
+                            usersOfPages.add(currUser);
+                        }
                         Log.d("React Activity ", "Gửi ảnh qua nè" + pages.toString());
                         Log.d("React Activity ", "Gửi user qua nè" + usersOfPages.toString());
                         PhotoAdapter adapter = new PhotoAdapter(context, pages, usersOfPages);
@@ -340,7 +350,7 @@ public class PageReactFragment extends Fragment {
                     Log.e("Page React Fragment", "Id người gửi: " + id);
                     Log.e("Page React Fragment", "Id của ảnh ở trang hiện tại: " + imageId);
 
-                    if (id.equals(userId)) {
+                    if (id.equals(currUser.getUserId())) {
                         reactLayout.setVisibility(View.GONE);
                         tempComment.setVisibility(View.GONE);
                         reactToYouLayout.setVisibility(View.VISIBLE);
@@ -528,7 +538,7 @@ public class PageReactFragment extends Fragment {
 
     public void checkYourselfImage(View view, String imageId) {
         RecyclerView friendReactRecycleView = view.findViewById(R.id.friend_react_recycle);
-        friendReactRecycleView.setLayoutManager(new LinearLayoutManager(context));
+        friendReactRecycleView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
         listFriendReactToYou = new ArrayList<>();
         TextView activityReation = view.findViewById(R.id.activity_reaction);
 
@@ -619,12 +629,19 @@ public class PageReactFragment extends Fragment {
 
     public void getFriendReactToYou(String imageId, OnFriendLoadedListener listener) {
         ReactionService reactionService = ApiClient.getReactionService();
-        Call<List<User>> call = reactionService.getFriendReactedToImageYou(imageId);
-        call.enqueue(new Callback<List<User>>() {
+        Call<List<String>> call = reactionService.getFriendReactedToImageYou(imageId);
+        call.enqueue(new Callback<List<String>>() {
             @Override
-            public void onResponse(@NonNull Call<List<User>> call, @NonNull Response<List<User>> response) {
+            public void onResponse(@NonNull Call<List<String>> call, @NonNull Response<List<String>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    listener.onSuccess(response.body());
+                    List<String> idList= response.body();
+                    List<User> userList= new ArrayList<>();
+                    for(String id : idList){
+                        for(int i = 0; i< listFriend.size(); i++){
+                            if(id.equals(listFriend.get(i).getUserId())) userList.add(listFriend.get(i));
+                        }
+                    }
+                    listener.onSuccess(userList);
                     Log.e("Ban be da tha emoji", response.body().toString());
                 } else {
                     listener.onFailure("Error code: " + response.code());
@@ -632,7 +649,7 @@ public class PageReactFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(@NonNull Call<List<User>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<List<String>> call, @NonNull Throwable t) {
                 listener.onFailure(t.getMessage());
             }
         });

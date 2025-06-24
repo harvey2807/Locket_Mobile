@@ -112,7 +112,6 @@ public class ImageDao {
                 future.complete(null);
             }
         });
-
         return future;
     }
 }

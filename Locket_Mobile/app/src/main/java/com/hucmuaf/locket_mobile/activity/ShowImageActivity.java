@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -92,6 +93,8 @@ public class ShowImageActivity extends AppCompatActivity {
 
     private String token;
     private FirebaseService firebaseService;
+        private ProgressBar uploadProgressBar;
+        private ImageView sendBtn;
 
     @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
     @Override
@@ -109,6 +112,8 @@ public class ShowImageActivity extends AppCompatActivity {
         userId = getIntent().getStringExtra("userId");
         mAuth = FirebaseService.getInstance().getAuth();
         token = TokenManager.getToken(this);
+        uploadProgressBar = findViewById(R.id.uploadProgressBar);
+        sendBtn = findViewById(R.id.send_btn);
 
         ImageView imageView = findViewById(R.id.camera_preview);
         String imagePath = getIntent().getStringExtra("imagePath");
@@ -210,6 +215,8 @@ public class ShowImageActivity extends AppCompatActivity {
 
         LinearLayout sendLayout = findViewById(R.id.send);
         sendLayout.setOnClickListener(v -> {
+            uploadProgressBar.setVisibility(View.VISIBLE);
+            sendBtn.setVisibility(View.GONE);
             assert imagePath != null;
             File file = new File(imagePath);
             Log.e("Image Path", imagePath);
@@ -268,6 +275,8 @@ public class ShowImageActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call<UploadResponse> call, @NonNull Response<UploadResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
+                    uploadProgressBar.setVisibility(View.GONE);
+                    sendBtn.setVisibility(View.VISIBLE);
                     String imageUrl = response.body().getUrl(); // 🔥 Đây là link ảnh từ Cloudinary
                     Log.d("UPLOAD", "Ảnh đã upload: " + imageUrl);
                     // Bạn có thể hiển thị ảnh:
@@ -286,6 +295,8 @@ public class ShowImageActivity extends AppCompatActivity {
                     saveImage(newImage);
 
                 } else if (response.code() == 401) {
+                    uploadProgressBar.setVisibility(View.GONE);
+                    sendBtn.setVisibility(View.VISIBLE);
                     // kiểm tra lại token nếu hết hạn thì tạo lại cái mới
                     FirebaseUser user = mAuth.getCurrentUser();
                     if (user != null) {
@@ -328,6 +339,8 @@ public class ShowImageActivity extends AppCompatActivity {
             @Override
             public void onFailure
                     (@NonNull Call<UploadResponse> call, @NonNull Throwable t) {
+                uploadProgressBar.setVisibility(View.GONE);
+                sendBtn.setVisibility(View.VISIBLE);
                 Log.e("UPLOAD", "Upload thất bại", t);
             }
         });
