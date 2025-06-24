@@ -93,8 +93,8 @@ public class ShowImageActivity extends AppCompatActivity {
 
     private String token;
     private FirebaseService firebaseService;
-        private ProgressBar uploadProgressBar;
-        private ImageView sendBtn;
+    private ProgressBar uploadProgressBar;
+    private ImageView sendBtn;
 
     @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
     @Override
