@@ -59,11 +59,21 @@ public class ItemFriendAdapter extends RecyclerView.Adapter<ItemFriendViewHolder
 
         /**try catch lại khi URL bị null*/
         // Load ảnh từ URL bằng Glide
-        Glide.with(context)
-                .load(imageName)
-                .placeholder(R.drawable.default_img) // ảnh tạm khi đang load
-                .error(R.drawable.default_img) // ảnh khi load lỗi
-                .into(holder.getIvIcon());
+        if (imageName != null && !imageName.isEmpty()) {
+            Glide.with(context)
+                    .load(imageName)
+                    .placeholder(R.drawable.default_img) // ảnh tạm khi đang load
+                    .error(R.drawable.default_img) // ảnh khi load lỗi
+                    .into(holder.getIvIcon());
+        }{
+            // Nếu ảnh null thì đặt ảnh mặc định
+            holder.getIvIcon().setImageResource(R.drawable.default_img);
+        }
+//        Glide.with(context)
+//                .load(imageName)
+//                .placeholder(R.drawable.default_img) // ảnh tạm khi đang load
+//                .error(R.drawable.default_img) // ảnh khi load lỗi
+//                .into(holder.getIvIcon());
         holder.getTvName().setText(u.getFullName());
     }
 

@@ -115,4 +115,39 @@ public class ImageDao {
 
         return future;
     }
+
+    // Xoá ảnh theo imageId
+    public CompletableFuture<Void> deleteImageById(String imageId) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
+        dbRef.orderByChild("imageId").equalTo(imageId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            for (DataSnapshot child : snapshot.getChildren()) {
+                                child.getRef().removeValue((error, ref) -> {
+                                    if (error != null) {
+                                        future.completeExceptionally(
+                                                new RuntimeException("Lỗi xóa ảnh: " + error.getMessage()));
+                                    } else {
+                                        future.complete(null);
+                                    }
+                                });
+                                return;
+                            }
+                        } else {
+                            future.completeExceptionally(
+                                    new RuntimeException("Không tìm thấy ảnh với imageId: " + imageId));
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                        future.completeExceptionally(new RuntimeException(error.getMessage()));
+                    }
+                });
+
+        return future;
+    }
 }

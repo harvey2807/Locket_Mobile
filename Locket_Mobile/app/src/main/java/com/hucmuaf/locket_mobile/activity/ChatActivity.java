@@ -71,6 +71,7 @@ public class ChatActivity extends AppCompatActivity {
     private WebSocket webSocket;
     private OkHttpClient client;
     private String imageId;
+//    private String avtUrl;
     private MessageRepository messageRepository;
 
 //    private static final String WS_SERVER_URL = "ws://192.168.181.190:8080/ws"; // Fixed URL format
@@ -95,10 +96,12 @@ public class ChatActivity extends AppCompatActivity {
                 return;
             }
 
+            messageList = new ArrayList<>();
             Log.d(TAG, "Current user: " + currentUserId + ", Other user: " + otherUserId);
             initializeViews();
+            recyclerViewMessages.setLayoutManager(new LinearLayoutManager(this));
             loadUserProfile(otherUserId);
-            setupRecyclerView();
+//            setupRecyclerView();
             loadInitialMessages();
             new android.os.Handler().postDelayed(this::connectWebSocket, 1000);
 
@@ -120,7 +123,7 @@ public class ChatActivity extends AppCompatActivity {
         editTextMessage = findViewById(R.id.editTextText);
         sendButton = findViewById(R.id.account15);
         recyclerViewMessages = findViewById(R.id.recyclerViewMessages);
-
+        recyclerViewMessages.setLayoutManager(new LinearLayoutManager(this));
         if (name != null) {
             name.setText("Unknown");
         }
@@ -130,13 +133,13 @@ public class ChatActivity extends AppCompatActivity {
         Log.d(TAG, "Views initialized");
     }
 
-    private void setupRecyclerView() {
-        messageList = new ArrayList<>();
-        messageAdapter = new ChatMessageAdapter(this, messageList, currentUserId, recyclerViewMessages);
-        recyclerViewMessages.setLayoutManager(new LinearLayoutManager(this));
-        recyclerViewMessages.setAdapter(messageAdapter);
-        Log.d(TAG, "RecyclerView initialized");
-    }
+//    private void setupRecyclerView() {
+//        messageList = new ArrayList<>();
+//        messageAdapter = new ChatMessageAdapter(this, messageList, currentUserId, avtUrl, recyclerViewMessages);
+//        recyclerViewMessages.setLayoutManager(new LinearLayoutManager(this));
+//        recyclerViewMessages.setAdapter(messageAdapter);
+//        Log.d(TAG, "RecyclerView initialized");
+//    }
 
     private void setupClickListeners() {
         sendButton.setOnClickListener(v -> {
@@ -216,13 +219,29 @@ public class ChatActivity extends AppCompatActivity {
                     } else {
                         Log.e(TAG, "Name TextView is null");
                     }
-                    if (avtUrl != null && !avtUrl.isEmpty() && avt != null) {
-                        Glide.with(ChatActivity.this)
-                                .load(avtUrl)
-                                .circleCrop()
-                                .error(R.drawable.default_avatar)
-                                .into(avt);
-                        Log.d(TAG, "Avatar URL available: " + avtUrl);
+//                    if (avtUrl != null && !avtUrl.isEmpty() && avt != null) {
+//                        Glide.with(ChatActivity.this)
+//                                .load(avtUrl)
+//                                .circleCrop()
+//                                .error(R.drawable.default_avatar)
+//                                .into(avt);
+//                        Log.d(TAG, "Avatar URL available: " + avtUrl);
+//                    }
+                    if (avtUrl != null && !avtUrl.isEmpty()) {
+                        // Load avatar lên header
+                        if (avt != null) {
+                            Glide.with(ChatActivity.this)
+                                    .load(avtUrl)
+                                    .circleCrop()
+                                    .error(R.drawable.default_avatar)
+                                    .into(avt);
+                        }
+
+                        // Khởi tạo adapter và gán avatar người nhận
+                        messageAdapter = new ChatMessageAdapter(ChatActivity.this,
+                                messageList, currentUserId, avtUrl, recyclerViewMessages);
+                        recyclerViewMessages.setAdapter(messageAdapter);
+                        Log.d(TAG, "Set adapter with receiver avatar");
                     }
 
                     Log.d(TAG, "Loaded user profile successfully for: " + userId);
@@ -250,8 +269,9 @@ public class ChatActivity extends AppCompatActivity {
                 .build();
 
         Request request = new Request.Builder()
-                .url("ws://192.168.0.113:8080/ws")
-//                .url("ws://192.168.0.112:8080/ws")
+
+//                .url("https://locket-mobile.onrender.com/ws")
+                .url("ws://192.168.196.193:8080/ws")
                 .build();
 
         webSocket = client.newWebSocket(request, new WebSocketListener() {

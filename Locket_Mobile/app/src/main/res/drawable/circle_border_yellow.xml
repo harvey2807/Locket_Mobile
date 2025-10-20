@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <solid android:color="@color/pallet1"/> <!-- Màu nền -->
-    <stroke android:width="4dp" android:color="@color/pallet5"/> <!-- Viền màu xam -->
+    <solid android:color="@android:color/transparent" />
+    <stroke android:width="5dp" android:color="@color/pallet5"/> <!-- Viền màu xam -->
     <corners android:radius="245dp"/> <!-- Bo góc -->
 </shape>

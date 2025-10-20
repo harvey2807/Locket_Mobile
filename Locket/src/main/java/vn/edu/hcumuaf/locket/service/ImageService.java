@@ -113,4 +113,9 @@ public class ImageService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi không xác định: " + e.getMessage());
         }
     }
+
+    //Xóa ảnh theo imageId
+    public CompletableFuture<Void> deleteImageById(String imageId) {
+        return imageDao.deleteImageById(imageId);
+    }
 }

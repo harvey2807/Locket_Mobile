@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -15,11 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.gson.Gson;
 import com.hucmuaf.locket_mobile.R;
 import com.hucmuaf.locket_mobile.adapter.ImageAdapter;
 import com.hucmuaf.locket_mobile.adapter.ItemFriendAdapter;
-import com.hucmuaf.locket_mobile.adapter.PhotoAdapter;
 import com.hucmuaf.locket_mobile.inteface.OnImageClickListener;
 import com.hucmuaf.locket_mobile.modedb.Image;
 import com.hucmuaf.locket_mobile.modedb.User;
@@ -28,8 +27,7 @@ import com.hucmuaf.locket_mobile.repo.ImageLoadCallback;
 import com.hucmuaf.locket_mobile.service.ApiClient;
 import com.hucmuaf.locket_mobile.service.FirebaseService;
 import com.hucmuaf.locket_mobile.service.FriendRequestService;
-import com.hucmuaf.locket_mobile.service.OnFriendLoadedListener;
-import com.hucmuaf.locket_mobile.service.OnImagesLoadedListener;
+import com.hucmuaf.locket_mobile.service.UserService;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -58,9 +56,11 @@ public class AllImageActivity extends AppCompatActivity{
     private List<User> listFriend;
     private List<Image> allPhotos;
     private String currentUserId = null; //lấy từ session/login
-
+//    private User currUser = null;
     private String friendId = "ALL";
     private String friendName = "Tất cả bạn bè";
+    private String initialFriendId = null;
+    private String initialFriendName = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,10 +69,14 @@ public class AllImageActivity extends AppCompatActivity{
         listFriendIds = new HashSet<>();
         listFriend = new ArrayList<>();
         allPhotos = new ArrayList<>();
+
+
         //lấy ra user hiện tại
         mAuth = FirebaseService.getInstance().getAuth();
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
         currentUserId = firebaseUser != null ? firebaseUser.getUid() : null;
+//        getUser(currentUserId);
+//        Log.e("CurrUser:", currUser.toString());
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.all_images);
@@ -145,13 +149,35 @@ public class AllImageActivity extends AppCompatActivity{
 
         photoGrid.setAdapter(imageAdapter);
 
+        //Nhận từ reactFragment
+        Intent intent = getIntent();
+        initialFriendId = intent.getStringExtra("friendId");
+        initialFriendName = intent.getStringExtra("friendName");
+
+        if (initialFriendId != null){
+            filterImagesBySenderId(initialFriendId);
+            titleFriend.setText(initialFriendName);
+            maskView.setVisibility(View.GONE);
+            layout.setVisibility(View.GONE);
+        }
+
         //Khi nhấn vào nút chụp ở bottomBar thì chuyển sang home page
         View take = findViewById(R.id.take);
         take.setOnClickListener(v -> {
-            Intent intent = new Intent(AllImageActivity.this, PageComponentActivity.class);
-            startActivity(intent);
-            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            Intent intentHome = new Intent(AllImageActivity.this, PageComponentActivity.class);
+            intentHome.putExtra("userId", currentUserId);
+            startActivity(intentHome);
+            intentHome.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         });
+
+        //Nhấn vào icon message thì chuyển sang MessageActivity
+        ImageView message = findViewById(R.id.message);
+        message.setOnClickListener(v -> {
+            Intent intentChat = new Intent(AllImageActivity.this, MessageActivity.class);
+            startActivity(intentChat);
+            intentChat.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        });
+
 
         loadListFriendID();
         loadListUser();
@@ -170,8 +196,8 @@ public class AllImageActivity extends AppCompatActivity{
                     //Thêm mục "Tôi"
                     //Tìm user by id
                     User owner = new User();
-                    owner.setUserId(currentUserId);
                     owner.setFullName("Tôi");
+                    owner.setUserId(currentUserId);
                     listFriend.add(owner);
                     friendAdapter.updateList(listFriend);
                     Log.e("AllImage: FRIENDS", listFriend.toString());
@@ -238,6 +264,25 @@ public class AllImageActivity extends AppCompatActivity{
         }
         imageAdapter.updateList(listPhotoFilter);
     }
+
+//    public void getUser(String userId) {
+//        UserService userService = ApiClient.getUserService();
+//        Call<User> call = userService.findUserById(userId);
+//        call.enqueue(new Callback<User>() {
+//            @Override
+//            public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
+//                currUser = response.body();
+//                assert currUser != null;
+//                Log.e("Page React Fragment UserCurr", currUser.toString());
+//            }
+//
+//            @Override
+//            public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
+//                Log.e("Page React Fragment", "Không lấy được USER");
+//
+//            }
+//        });
+//    }
 
     @Override
     protected void onDestroy() {

@@ -1,6 +1,7 @@
 package com.hucmuaf.locket_mobile.adapter;
 
 import android.content.Context;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,11 +46,31 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder> {
     //Sử dụng Glide để tải hình ảnh từ URL và hiển thị trong ImageView.
     @Override
     public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
+        //Tính toán kích thước của ô ảnh
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        int screenWidth = displayMetrics.widthPixels;
+
+        // 3 cột, mỗi cột cách nhau 4dp (spacing)
+        int spacing = (int) context.getResources().getDimension(R.dimen.grid_spacing);
+        int totalSpacing = spacing * 2; // 3 ảnh = 2 khoảng trống
+        int itemSize = (screenWidth - totalSpacing) / 3;
+
+        //set kích thước
+        ViewGroup.LayoutParams params = holder.itemView.getLayoutParams();
+        if (params == null) {
+            params = new ViewGroup.LayoutParams(itemSize, itemSize);
+        } else {
+            params.width = itemSize;
+            params.height = itemSize;
+        }
+        holder.itemView.setLayoutParams(params);
+
         Image photo = imageList.get(position);
         String url = photo.getUrlImage();
         if (url != null && !url.isEmpty()) {
             Glide.with(context)
                     .load(url)
+                    .override(itemSize, itemSize)
                     .placeholder(R.drawable.default_img) // ảnh tạm khi đang load
                     .error(R.drawable.default_img) // ảnh khi load lỗi
                     .into(holder.getImageView());

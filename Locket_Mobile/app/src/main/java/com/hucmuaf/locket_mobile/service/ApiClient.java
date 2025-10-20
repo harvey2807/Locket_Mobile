@@ -15,13 +15,17 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ApiClient {
     //     private static final String BASE_URL = "http://10.50.0.1:8080/"; // For Android emulator
 
-    private static final String BASE_URL = "http://192.168.72.157:8080/"; // For real device, your computer's IP
+
+//    private static final String BASE_URL = "https://locket-mobile.onrender.com/";
+    private static final String BASE_URL = "http://192.168.196.193:8080/";
+
     private static Retrofit retrofit = null;
     // Retrofit có AuthInterceptor để tự động thêm token vào header
     private static Retrofit authRetrofit = null;
 
     private static FriendListApiService friendListApiService = null;
     private static MessageListAPIService messageListAPIService;
+//    private static UploadImageService uploadImageService;
     private static ImageService imageService;
     private static ReactionService reactionService;
     private static UserService userService;
@@ -51,6 +55,12 @@ public class ApiClient {
         }
         return imageService;
     }
+//    public static UploadImageService getUploadImageService() {
+//        if (uploadImageService == null) {
+//            uploadImageService = getClient().create(UploadImageService.class);
+//        }
+//        return uploadImageService;
+//    }
     // retrofit với AuthInterceptor để tự động thêm token vào header
     // Retrofit có token – cho các API quan trọng (profile, cập nhật,...)
     public static Retrofit getAuthClient(Context context) {
@@ -79,6 +89,7 @@ public class ApiClient {
         }
         return friendListApiService;
     }
+
     public static MessageListAPIService getMessageListApiService() {
         if (messageListAPIService == null) {
             messageListAPIService = getClient().create(MessageListAPIService.class);
@@ -133,7 +144,7 @@ public class ApiClient {
         }
         return authService;
     }
-      
+
     public static FriendRequestService getFriendRequestService(){
         if (friendRequestService == null){
             friendRequestService = getClient().create(FriendRequestService.class);
