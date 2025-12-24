@@ -71,7 +71,10 @@ public interface FriendListApiService {
     // Lấy user ID từ email
     @GET("api/friend-list/user-id/email/{email}")
     Call<String> getUserIdByEmail(@Path("email") String email);
-    
+
+    @GET("api/friend-list/user/{userId}")
+    Call<User> getUserById(@Path("userId") String userId);
+
     // Test API để kiểm tra kết nối
     @GET("api/test-data/test")
     Call<String> testConnection();

@@ -51,6 +51,7 @@ import retrofit2.Response;
 public class ListFriendActivity extends AppCompatActivity implements OnAddFriendClickListener {
     private FriendListApiService apiService;
     private String currentUserId;
+    private User currentUser;
     private TextView friendCount;
     private RecyclerView friendsRecyclerView;
     private RecyclerView pendingRequestsRecyclerView;
@@ -88,10 +89,10 @@ public class ListFriendActivity extends AppCompatActivity implements OnAddFriend
                 Log.e("ListFriendActivity", "No userId available");
             }
         }
-        
+
         // Log để debug
         Log.d("ListFriendActivity", "Final userId being used: " + currentUserId);
-        
+
         initializeAfterUserId();
     }
 
@@ -100,6 +101,7 @@ public class ListFriendActivity extends AppCompatActivity implements OnAddFriend
         initializeViews();
         setupRecyclerViews();
         setupClickListeners();
+        loadCurrentUserInfo();
         loadFriendList();
         loadPendingRequests();
         loadSentRequests();
@@ -205,13 +207,48 @@ public class ListFriendActivity extends AppCompatActivity implements OnAddFriend
         instagramChevron.setOnClickListener(v -> shareToApp("com.instagram.android", "Instagram"));
         shareChevron.setOnClickListener(v -> shareToAllApps());
     }
+    private void loadCurrentUserInfo() {
+        Call<User> call = apiService.getUserById(currentUserId);
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    currentUser = response.body();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
+                Log.e("ListFriendActivity", "Failed to load current user info");
+            }
+        });
+    }
+    private String getCurrentUserName() {
+        if (currentUser != null && currentUser.getFullName() != null && !currentUser.getFullName().isEmpty()) {
+            return currentUser.getFullName();
+        }
+        return currentUserId;
+    }
+
+    private String getShareText() {
+        String name = getCurrentUserName();
+        String username = currentUser != null ? currentUser.getUserName() : "";
+
+        return "Tải app Modis tại đây:\n" +
+                "https://drive.google.com/drive/folders/1LSJe9ARKBnv1dhGi45je4vaB0MpNQzdd?usp=sharing\n\n" +
+                "Tôi là: " + name + "\n" +
+                "Username: " + username + "\n\n" +
+                "Cài xong mở app → tìm username này để kết bạn nha 💛";
+    }
+
+
 
     private void shareToApp(String packageName, String appName) {
-        String shareText = "Tôi muốn thêm bạn vào Màn hình chính của tôi qua Modis. Chạm vào liên kết để chấp nhận 💛 https://modis.app/invite/" + currentUserId;
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, getShareText());
         shareIntent.setPackage(packageName);
+
         try {
             startActivity(shareIntent);
         } catch (Exception e) {
@@ -219,68 +256,26 @@ public class ListFriendActivity extends AppCompatActivity implements OnAddFriend
         }
     }
 
+
     private void shareToAllApps() {
-        String shareText = "Tôi muốn thêm bạn vào Màn hình chính của tôi qua Modis. Chạm vào liên kết để chấp nhận 💛 https://modis.app/invite/" + currentUserId;
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
-        startActivity(Intent.createChooser(shareIntent, "Chia sẻ qua"));
+        shareIntent.putExtra(Intent.EXTRA_TEXT, getShareText());
+        startActivity(Intent.createChooser(shareIntent, "Chia sẻ Modis"));
     }
 
     private void setupAppIconClickListeners() {
-        String shareText = "Tôi muốn thêm bạn vào Màn hình chính của tôi qua Modis. Chạm vào liên kết để chấp nhận 💛 https://modis.app/invite/" + currentUserId;
-
         LinearLayout messengerLayout = findViewById(R.id.messenger_layout);
         LinearLayout facebookLayout = findViewById(R.id.facebook_layout);
         LinearLayout instagramLayout = findViewById(R.id.instagram_layout);
         LinearLayout shareLayout = findViewById(R.id.share_layout);
 
-        messengerLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                shareIntent.setType("text/plain");
-                shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
-                shareIntent.setPackage("com.facebook.orca");
-                try {
-                    startActivity(shareIntent);
-                } catch (Exception e) {
-                    Toast.makeText(v.getContext(), "Messenger chưa được cài đặt!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        facebookLayout.setOnClickListener(v -> {
-            Intent shareIntent = new Intent(Intent.ACTION_SEND);
-            shareIntent.setType("text/plain");
-            shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
-            shareIntent.setPackage("com.facebook.katana");
-            try {
-                startActivity(shareIntent);
-            } catch (Exception e) {
-                Toast.makeText(this, "Facebook chưa được cài đặt!", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        instagramLayout.setOnClickListener(v -> {
-            Intent shareIntent = new Intent(Intent.ACTION_SEND);
-            shareIntent.setType("text/plain");
-            shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
-            shareIntent.setPackage("com.instagram.android");
-            try {
-                startActivity(shareIntent);
-            } catch (Exception e) {
-                Toast.makeText(this, "Instagram chưa được cài đặt!", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        shareLayout.setOnClickListener(v -> {
-            Intent shareIntent = new Intent(Intent.ACTION_SEND);
-            shareIntent.setType("text/plain");
-            shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
-            startActivity(Intent.createChooser(shareIntent, "Chia sẻ qua"));
-        });
+        messengerLayout.setOnClickListener(v -> shareToApp("com.facebook.orca", "Messenger"));
+        facebookLayout.setOnClickListener(v -> shareToApp("com.facebook.katana", "Facebook"));
+        instagramLayout.setOnClickListener(v -> shareToApp("com.instagram.android", "Instagram"));
+        shareLayout.setOnClickListener(v -> shareToAllApps());
     }
+
 
     private void loadFriendList() {
         // Gọi API để lấy danh sách bạn bè từ Firebase
@@ -443,10 +438,10 @@ public class ListFriendActivity extends AppCompatActivity implements OnAddFriend
         // Thêm thông tin sender để tránh null
         User senderUser = new User();
         senderUser.setUserId(currentUserId);
-        senderUser.setUserName("Current User");
-        senderUser.setFullName("Current User");
+        senderUser.setUserName(getCurrentUserName());
+        senderUser.setFullName(getCurrentUserName());
         request.setSender(senderUser);
-        request.setSenderName("Current User");
+        request.setSenderName(getCurrentUserName());
 
         Log.d("ListFriendActivity", "Sending friend request: " +
                 "SenderId=" + request.getSenderId() +
@@ -467,7 +462,7 @@ public class ListFriendActivity extends AppCompatActivity implements OnAddFriend
                     newRequest.setReceiverId(user.getUserId());
                     newRequest.setStatus("PENDING");
                     newRequest.setTimestamp(System.currentTimeMillis());
-                    newRequest.setSenderName("Current User");
+                    newRequest.setSenderName(getCurrentUserName());
 
                     sentRequestsList.add(0, newRequest);
                     sentRequestAdapter.notifyItemInserted(0);
@@ -519,7 +514,7 @@ public class ListFriendActivity extends AppCompatActivity implements OnAddFriend
                     newRequest.setReceiverId(user.getUserId());
                     newRequest.setStatus("PENDING");
                     newRequest.setTimestamp(System.currentTimeMillis());
-                    newRequest.setSenderName("Current User");
+                    newRequest.setSenderName(getCurrentUserName());
 
                     sentRequestsList.add(0, newRequest);
                     sentRequestAdapter.notifyItemInserted(0);
@@ -621,26 +616,26 @@ public class ListFriendActivity extends AppCompatActivity implements OnAddFriend
         });
     }
 
-    // share qua app khác (khi người dùng chưa có tài khoản)
-    private void shareToSocialMedia(String platform) {
-        ShareRequest request = new ShareRequest(currentUserId, "Join me on Locket!");
-        Call<String> call = apiService.shareToSocialMedia(platform, request);
-        call.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                if (response.isSuccessful()) {
-                    Toast.makeText(ListFriendActivity.this, "Shared to " + platform, Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(ListFriendActivity.this, "Failed to share", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                Toast.makeText(ListFriendActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+//    // share qua app khác (khi người dùng chưa có tài khoản)
+//    private void shareToSocialMedia(String platform) {
+//        ShareRequest request = new ShareRequest(currentUserId, "Join me on Locket!");
+//        Call<String> call = apiService.shareToSocialMedia(platform, request);
+//        call.enqueue(new Callback<String>() {
+//            @Override
+//            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+//                if (response.isSuccessful()) {
+//                    Toast.makeText(ListFriendActivity.this, "Shared to " + platform, Toast.LENGTH_SHORT).show();
+//                } else {
+//                    Toast.makeText(ListFriendActivity.this, "Failed to share", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+//                Toast.makeText(ListFriendActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//    }
 
     // Load danh sách lời mời kết bạn đang chờ
     private void loadPendingRequests() {
@@ -797,13 +792,13 @@ public class ListFriendActivity extends AppCompatActivity implements OnAddFriend
 
                     for (FriendRequest request : sentRequests) {
                         if (request.getSenderName() == null || request.getSenderName().isEmpty()) {
-                            request.setSenderName("Current User");
+                            request.setSenderName(getCurrentUserName());
                         }
                         if (request.getSender() == null) {
                             User senderUser = new User();
                             senderUser.setUserId(currentUserId);
-                            senderUser.setUserName("Current User");
-                            senderUser.setFullName("Current User");
+                            senderUser.setUserName(getCurrentUserName());
+                            senderUser.setFullName(getCurrentUserName());
                             request.setSender(senderUser);
                         }
                     }

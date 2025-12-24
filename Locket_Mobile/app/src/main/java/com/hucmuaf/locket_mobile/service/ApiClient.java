@@ -13,11 +13,11 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
-    //     private static final String BASE_URL = "http://10.50.0.1:8080/"; // For Android emulator
+         private static final String BASE_URL = "http://10.0.166.15:8080/"; // For Android emulator
 
 
 //    private static final String BASE_URL = "https://locket-mobile.onrender.com/";
-    private static final String BASE_URL = "http://192.168.196.193:8080/";
+//    private static final String BASE_URL = "http://192.168.196.193:8080/";
 
     private static Retrofit retrofit = null;
     // Retrofit có AuthInterceptor để tự động thêm token vào header
